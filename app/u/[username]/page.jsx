@@ -82,11 +82,50 @@ export default async function PublicProfilePage({ params }) {
         )}
       </div>
 
-      <div className="mt-6 card text-center text-ink-400">
-        <p className="text-sm">
-          Posts and activity will show up here once The Wall is live.
-        </p>
+      <div className="mt-6">
+        <h2 className="font-display text-xl font-semibold text-ink-800 mb-4">
+          Open Mic posts
+        </h2>
+        <ProfilePosts profileId={profile.id} />
       </div>
+    </div>
+  );
+}
+
+async function ProfilePosts({ profileId }) {
+  const supabase = createClient();
+
+  const { data: posts } = await supabase
+    .from('tmao_posts')
+    .select('id, body, created_at')
+    .eq('author_id', profileId)
+    .eq('status', 'approved')
+    .order('created_at', { ascending: false })
+    .limit(20);
+
+  if (!posts || posts.length === 0) {
+    return (
+      <div className="card text-center text-ink-400">
+        <p className="text-sm">No posts on the Wall yet.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {posts.map((post) => (
+        <Link key={post.id} href={`/open-mic/${post.id}`} className="card block hover:border-clay-200 transition">
+          <p className="text-ink-600 text-sm leading-relaxed whitespace-pre-wrap break-words">
+            {post.body}
+          </p>
+          <p className="text-ink-400 text-xs mt-2">
+            {new Date(post.created_at).toLocaleDateString(undefined, {
+              month: 'short',
+              day: 'numeric',
+            })}
+          </p>
+        </Link>
+      ))}
     </div>
   );
 }

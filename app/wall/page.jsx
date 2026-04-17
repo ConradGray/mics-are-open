@@ -1,0 +1,112 @@
+import { createClient } from '@/lib/supabase/server';
+import PostComposer from './PostComposer';
+import PostCard from './PostCard';
+
+export const dynamic = 'force-dynamic';
+
+export const metadata = {
+  title: 'The Wall — The Mics Are Open',
+};
+
+export default async function WallPage() {
+  const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Fetch approved posts with author profile, reaction counts, and reply counts
+  const { data: posts } = await supabase
+    .from('tmao_posts')
+    .select(`
+      id, body, status, created_at, author_id,
+      tmao_profiles!tmao_posts_author_profile_fk (
+        username, display_name, avatar_url
+      ),
+      tmao_replies ( id ),
+      tmao_reactions ( id, emoji, user_id )
+    `)
+    .eq('status', 'approved')
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  // Also fetch user's own pending posts so they can see them
+  let pendingPosts = [];
+  if (user) {
+    const { data } = await supabase
+      .from('tmao_posts')
+      .select(`
+        id, body, status, created_at, author_id,
+        tmao_profiles!tmao_posts_author_profile_fk (
+          username, display_name, avatar_url
+        ),
+        tmao_replies ( id ),
+        tmao_reactions ( id, emoji, user_id )
+      `)
+      .eq('author_id', user.id)
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false });
+
+    pendingPosts = data || [];
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <div className="mb-8">
+        <p className="uppercase tracking-[0.3em] text-[9px] font-bold text-clay-500 mb-3 flex items-center gap-3">
+          <span className="inline-block w-8 h-px bg-clay-500" />
+          Community feed
+        </p>
+        <div className="w-10 h-0.5 bg-clay-500 mb-4" />
+        <h1 className="font-display text-[clamp(52px,8vw,88px)] leading-[0.90] text-ink-800">
+          The Wall
+        </h1>
+        <p className="mt-3 text-sm text-ink-600 leading-relaxed">
+          Short thoughts, reflections, reactions. Whatever the show sparked.
+        </p>
+      </div>
+
+      {user ? (
+        <PostComposer userId={user.id} />
+      ) : (
+        <div className="card text-center mb-6">
+          <p className="text-ink-500 text-sm">
+            <a href="/login?next=/wall" className="text-clay-500 hover:text-clay-600 font-medium">
+              Log in
+            </a>{' '}
+            or{' '}
+            <a href="/signup?next=/wall" className="text-clay-500 hover:text-clay-600 font-medium">
+              join TMAO
+            </a>{' '}
+            to post on the Wall.
+          </p>
+        </div>
+      )}
+
+      {pendingPosts.length > 0 && (
+        <div className="mb-6 space-y-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-ink-400">
+            Your pending posts
+          </p>
+          {pendingPosts.map((post) => (
+            <PostCard key={post.id} post={post} currentUserId={user?.id} isPending />
+          ))}
+        </div>
+      )}
+
+      <div className="space-y-4">
+        {posts && posts.length > 0 ? (
+          posts.map((post) => (
+            <PostCard key={post.id} post={post} currentUserId={user?.id} />
+          ))
+        ) : (
+          <div className="card text-center text-ink-400">
+            <p className="text-sm">
+              The Wall is quiet for now. Be the first to post something.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -9,6 +9,20 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/wall',
+        destination: '/open-mic',
+        permanent: true,
+      },
+      {
+        source: '/wall/:path*',
+        destination: '/open-mic/:path*',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

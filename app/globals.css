@@ -1,60 +1,77 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --cream: #fdfaf4;
-  --ink: #221d17;
-  --clay: #b45132;
+  --bg:    #0D0D0D;
+  --lime:  #C7FF00;
+  --white: #F0F0F0;
 }
 
 html,
 body {
-  background-color: var(--cream);
-  color: var(--ink);
+  background-color: var(--bg);
+  color: var(--white);
   min-height: 100vh;
 }
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Poppins', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-h1,
-h2,
-h3 {
-  font-family: 'Fraunces', Georgia, serif;
-  letter-spacing: -0.01em;
+/* Bebas Neue for all headings */
+h1, h2, h3 {
+  font-family: 'Bebas Neue', 'Arial Black', Impact, sans-serif;
 }
 
-/* Warm, gently noisy background for that living-room feel */
+/* Subtle lime-glow background — replaces the warm "cozy" gradient */
 .bg-cozy {
-  background-color: #fdfaf4;
+  background-color: #0D0D0D;
   background-image:
-    radial-gradient(at 12% 8%, rgba(180, 81, 50, 0.08) 0, transparent 45%),
-    radial-gradient(at 88% 92%, rgba(138, 161, 127, 0.10) 0, transparent 50%);
+    radial-gradient(at 10% 6%,  rgba(199,255,0,0.05) 0, transparent 48%),
+    radial-gradient(at 90% 94%, rgba(199,255,0,0.03) 0, transparent 52%);
 }
 
-/* Card style used across auth + profile pages */
+/* ── Shared component classes ─────────────────────────── */
+
+/* Card — dark panel with subtle border */
 .card {
-  @apply bg-white/80 backdrop-blur-sm rounded-2xl shadow-card border border-cream-200 p-8;
+  @apply bg-cream-100 backdrop-blur-sm rounded-xl border border-cream-200 p-6;
 }
 
+/* Form input — dark field */
 .input {
-  @apply w-full rounded-xl border border-cream-200 bg-white px-4 py-3 text-ink-800 placeholder:text-ink-400/60 focus:border-clay-400 focus:outline-none focus:ring-2 focus:ring-clay-200 transition;
+  @apply w-full rounded-xl border border-cream-200 bg-cream-100
+         px-4 py-3
+         text-ink-800 placeholder:text-ink-400
+         focus:border-clay-500 focus:outline-none focus:ring-1 focus:ring-clay-500/30
+         transition;
 }
 
 .label {
-  @apply block text-sm font-medium text-ink-600 mb-1.5;
+  @apply block text-sm font-medium text-ink-600 mb-1.5 uppercase tracking-wider;
 }
 
+/* Primary button — lime fill */
 .btn-primary {
-  @apply inline-flex items-center justify-center rounded-xl bg-clay-500 px-5 py-3 text-white font-medium shadow-soft hover:bg-clay-600 active:bg-clay-700 disabled:opacity-60 disabled:cursor-not-allowed transition;
+  @apply inline-flex items-center justify-center
+         rounded-xl bg-clay-500 px-5 py-3
+         text-cream-50 font-bold text-sm tracking-wider uppercase
+         shadow-lime
+         hover:bg-clay-600 active:bg-clay-700
+         disabled:opacity-50 disabled:cursor-not-allowed
+         transition;
 }
 
+/* Ghost button — dark with subtle border */
 .btn-ghost {
-  @apply inline-flex items-center justify-center rounded-xl px-5 py-3 text-ink-600 font-medium hover:bg-cream-100 transition;
+  @apply inline-flex items-center justify-center
+         rounded-xl border border-cream-200 px-5 py-3
+         text-ink-800 font-medium text-sm
+         hover:border-clay-500 hover:text-clay-500
+         transition;
 }
