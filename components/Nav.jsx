@@ -22,16 +22,16 @@ export default async function Nav() {
 
   return (
     <header className="w-full border-b-2 border-clay-500 bg-cream-50/95 backdrop-blur sticky top-0 z-10">
-      <nav className="mx-auto max-w-5xl flex items-center justify-between px-6 h-16">
+      <nav className="mx-auto max-w-5xl flex items-center justify-between px-6 h-20">
 
         {/* Logo */}
         <Link href="/" className="flex items-center">
           <Image
             src="/logo-tmao.png"
             alt="The Mics Are Open"
-            width={260}
-            height={60}
-            className="h-12 w-auto"
+            width={300}
+            height={70}
+            className="h-16 w-auto"
             priority
           />
         </Link>
