@@ -93,6 +93,9 @@ export default function ProfileForm({ userId, initial, email }) {
       return;
     }
 
+    // Mark profile as complete in session metadata so middleware can enforce setup
+    await supabase.auth.updateUser({ data: { profile_complete: true } });
+
     router.push(`/u/${username.trim().toLowerCase()}`);
     router.refresh();
   }
