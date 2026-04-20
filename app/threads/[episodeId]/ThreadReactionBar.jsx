@@ -11,6 +11,7 @@ export default function ThreadReactionBar({ threadReplyId, reactions, currentUse
   const supabase = createClient();
   const [showPicker, setShowPicker] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState(null);
 
   // Group reactions by emoji: { "❤️": { count: 3, reacted: true }, ... }
   const grouped = {};
@@ -22,22 +23,25 @@ export default function ThreadReactionBar({ threadReplyId, reactions, currentUse
 
   async function toggleReaction(emoji) {
     if (!currentUserId) return;
+    setError(null);
 
     const existing = grouped[emoji]?.reacted;
 
     if (existing) {
-      await supabase
+      const { error: delErr } = await supabase
         .from('tmao_reactions')
         .delete()
         .eq('user_id', currentUserId)
         .eq('emoji', emoji)
         .eq('thread_reply_id', threadReplyId);
+      if (delErr) { setError(delErr.message); return; }
     } else {
-      await supabase.from('tmao_reactions').insert({
+      const { error: insErr } = await supabase.from('tmao_reactions').insert({
         user_id: currentUserId,
         emoji,
         thread_reply_id: threadReplyId,
       });
+      if (insErr) { setError(insErr.message); return; }
     }
 
     startTransition(() => router.refresh());
@@ -47,47 +51,52 @@ export default function ThreadReactionBar({ threadReplyId, reactions, currentUse
   const activeEmojis = EMOJI_SET.filter((e) => grouped[e]?.count > 0);
 
   return (
-    <div className="flex items-center gap-1.5 flex-wrap">
-      {activeEmojis.map((emoji) => (
-        <button
-          key={emoji}
-          onClick={() => toggleReaction(emoji)}
-          disabled={!currentUserId}
-          className={`inline-flex items-center gap-1 text-xs rounded-full px-2 py-1 transition ${
-            grouped[emoji].reacted
-              ? 'bg-clay-50 border border-clay-200 text-clay-600'
-              : 'bg-cream-100 border border-cream-200 text-ink-500 hover:border-clay-200'
-          } ${!currentUserId ? 'cursor-default' : 'cursor-pointer'}`}
-        >
-          <span>{emoji}</span>
-          <span className="tabular-nums">{grouped[emoji].count}</span>
-        </button>
-      ))}
-
-      {currentUserId && (
-        <div className="relative">
+    <div>
+      <div className="flex items-center gap-1.5 flex-wrap">
+        {activeEmojis.map((emoji) => (
           <button
-            onClick={() => setShowPicker(!showPicker)}
-            className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-cream-100 border border-cream-200 text-ink-400 hover:border-clay-200 hover:text-clay-500 transition text-xs"
-            title="React"
+            key={emoji}
+            onClick={() => toggleReaction(emoji)}
+            disabled={!currentUserId}
+            className={`inline-flex items-center gap-1 text-xs rounded-full px-2 py-1 transition ${
+              grouped[emoji].reacted
+                ? 'bg-clay-50 border border-clay-200 text-clay-600'
+                : 'bg-cream-100 border border-cream-200 text-ink-500 hover:border-clay-200'
+            } ${!currentUserId ? 'cursor-default' : 'cursor-pointer'}`}
           >
-            +
+            <span>{emoji}</span>
+            <span className="tabular-nums">{grouped[emoji].count}</span>
           </button>
+        ))}
 
-          {showPicker && (
-            <div className="absolute bottom-full left-0 mb-1 flex gap-1 bg-cream-100 border border-cream-200 rounded-xl shadow-card p-2 z-20">
-              {EMOJI_SET.map((emoji) => (
-                <button
-                  key={emoji}
-                  onClick={() => toggleReaction(emoji)}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-cream-100 transition text-base"
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        {currentUserId && (
+          <div className="relative">
+            <button
+              onClick={() => setShowPicker(!showPicker)}
+              className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-cream-100 border border-cream-200 text-ink-400 hover:border-clay-200 hover:text-clay-500 transition text-xs"
+              title="React"
+            >
+              +
+            </button>
+
+            {showPicker && (
+              <div className="absolute bottom-full left-0 mb-1 flex gap-1 bg-cream-100 border border-cream-200 rounded-xl shadow-card p-2 z-20">
+                {EMOJI_SET.map((emoji) => (
+                  <button
+                    key={emoji}
+                    onClick={() => toggleReaction(emoji)}
+                    className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-cream-100 transition text-base"
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      {error && (
+        <p className="text-xs text-red-500 mt-1">{error}</p>
       )}
     </div>
   );
