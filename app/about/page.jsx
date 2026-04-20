@@ -7,10 +7,10 @@ export const metadata = {
 };
 
 const hosts = [
-  { name: 'G Money',    initials: 'G',  photo: '/hosts/gmoney.jpg',  photoPos: 'center top',    ig: 'https://www.instagram.com/gmoneyizme' },
-  { name: 'Calvin',     initials: 'C',  photo: '/hosts/calvin.jpg',  photoPos: 'center top',    ig: 'https://www.instagram.com/calvinwanguku' },
-  { name: 'Ashley',     initials: 'A',  photo: '/hosts/ashley.jpg',  photoPos: 'center 20%',    ig: 'https://www.instagram.com/ashleymuthui' },
-  { name: 'Andy Young', initials: 'AY', photo: '/hosts/andy.jpg',    photoPos: 'center top',    ig: 'https://www.instagram.com/andy_young254' },
+  { name: 'G Money',    initials: 'G',  photo: '/hosts/gmoney.jpg',  photoPos: '65% 15%',  photoScale: 1.6,  ig: 'https://www.instagram.com/gmoneyizme' },
+  { name: 'Calvin',     initials: 'C',  photo: '/hosts/calvin.jpg',  photoPos: '35% 15%',  photoScale: 1.5,  ig: 'https://www.instagram.com/calvinwanguku' },
+  { name: 'Ashley',     initials: 'A',  photo: '/hosts/ashley.jpg',  photoPos: '55% 22%',  photoScale: 1.5,  ig: 'https://www.instagram.com/ashleymuthui' },
+  { name: 'Andy Young', initials: 'AY', photo: '/hosts/andy.jpg',    photoPos: 'center top', photoScale: 1.0, ig: 'https://www.instagram.com/andy_young254' },
 ];
 
 const polaroids = [
@@ -147,7 +147,7 @@ export default function AboutPage() {
                   <img
                     src={host.photo}
                     alt={host.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: host.photoPos }}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: host.photoPos, transform: `scale(${host.photoScale})`, transformOrigin: host.photoPos }}
                   />
                 </div>
                 <p className="font-display text-lg text-ink-800 mb-3">{host.name}</p>
