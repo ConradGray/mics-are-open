@@ -48,8 +48,10 @@ const platforms = [
 ];
 
 const polaroids = [
-  { src: '/collage/c7.jpg', top: '5%',  left: '10%', rotate: '-6deg', zIndex: 2 },
-  { src: '/collage/c4.jpg', top: '42%', left: '38%', rotate: '5deg',  zIndex: 3 },
+  { src: '/collage/ep1.jpg', top: '0%',  left: '0%',  rotate: '-5deg', zIndex: 2 },
+  { src: '/collage/ep3.jpg', top: '10%', left: '42%', rotate: '4deg',  zIndex: 4 },
+  { src: '/collage/ep2.jpg', top: '48%', left: '5%',  rotate: '3deg',  zIndex: 3 },
+  { src: '/collage/ep4.jpg', top: '55%', left: '44%', rotate: '-4deg', zIndex: 5 },
 ];
 
 export default function ListenPage() {
@@ -75,7 +77,7 @@ export default function ListenPage() {
         </div>
 
         {/* Right: polaroids — desktop */}
-        <div className="hidden md:block relative h-[420px]">
+        <div className="hidden md:block relative h-[560px]">
           {polaroids.map((img, i) => (
             <div
               key={i}
@@ -105,8 +107,8 @@ export default function ListenPage() {
         {/* Polaroids — mobile */}
         <div className="md:hidden flex justify-center gap-4 mt-2 mb-4">
           {[
-            { src: '/collage/c7.jpg', rotate: '-5deg', mt: '0px' },
-            { src: '/collage/c4.jpg', rotate: '4deg',  mt: '18px' },
+            { src: '/collage/ep1.jpg', rotate: '-5deg', mt: '0px' },
+            { src: '/collage/ep3.jpg', rotate: '4deg',  mt: '18px' },
           ].map((img, i) => (
             <div
               key={i}
