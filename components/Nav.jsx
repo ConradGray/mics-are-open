@@ -45,10 +45,10 @@ export default async function Nav() {
 
         {/* Nav links */}
         <div className="flex items-center gap-1">
-          <Link href="/about" className="btn-ghost text-sm py-2 px-4">About</Link>
-          <Link href="/open-mic" className="btn-ghost text-sm py-2 px-4">Open Mic</Link>
-          <Link href="/threads" className="btn-ghost text-sm py-2 px-4">Threads</Link>
-          <Link href="/listen" className="btn-ghost text-sm py-2 px-4">Listen</Link>
+          <Link href="/about" className="btn-nav">About</Link>
+          <Link href="/open-mic" className="btn-nav">Open Mic</Link>
+          <Link href="/threads" className="btn-nav">Threads</Link>
+          <Link href="/listen" className="btn-nav">Listen</Link>
 
           {/* Divider before auth actions */}
           <span className="w-px h-5 bg-cream-200 mx-2" />
@@ -70,7 +70,7 @@ export default async function Nav() {
             </>
           ) : (
             <>
-              <Link href="/login" className="btn-ghost text-sm py-2 px-4">Log in</Link>
+              <Link href="/login" className="btn-nav">Log in</Link>
               <Link href="/signup" className="btn-primary text-sm py-2 px-5">Join TMAO</Link>
             </>
           )}
