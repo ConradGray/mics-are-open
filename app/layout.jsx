@@ -16,13 +16,17 @@ export default function RootLayout({ children }) {
           {children}
         </main>
         <footer className="border-t-2 border-clay-500 py-6 px-8">
-          <div className="mx-auto max-w-5xl flex items-center justify-between">
+          <div className="mx-auto max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-4">
             <span className="text-xs font-semibold uppercase tracking-widest text-ink-400">
-              © 2025 The Good Company
+              © 2026 The Good Company
             </span>
-            <span className="text-xs text-ink-400 tracking-wider">
-              thegoodcompany.co.ke
-            </span>
+            <div className="flex items-center gap-5">
+              <a href="/about" className="text-xs text-ink-400 hover:text-clay-500 transition tracking-wider">About</a>
+              <a href="/listen" className="text-xs text-ink-400 hover:text-clay-500 transition tracking-wider">Listen</a>
+              <a href="https://www.youtube.com/playlist?list=PLURaeuNWMwdy894eBMVPwR67ZDQpSWwsg" target="_blank" rel="noopener noreferrer" className="text-xs text-ink-400 hover:text-clay-500 transition tracking-wider">YouTube</a>
+              <a href="https://open.spotify.com/show/6aU9hxLKdMIEzBfQ2IhYt6" target="_blank" rel="noopener noreferrer" className="text-xs text-ink-400 hover:text-clay-500 transition tracking-wider">Spotify</a>
+              <a href="https://thegoodcompany.co.ke" target="_blank" rel="noopener noreferrer" className="text-xs text-ink-400 hover:text-clay-500 transition tracking-wider">thegoodcompany.co.ke</a>
+            </div>
           </div>
         </footer>
       </body>

@@ -14,8 +14,8 @@ module.exports = {
         // "cream" → dark backgrounds
         cream: {
           50:  '#0D0D0D',   // page background
-          100: '#111111',   // surface / card background
-          200: '#222222',   // borders / dividers
+          100: '#161616',   // surface / card background — lifted for contrast
+          200: '#2a2a2a',   // borders / dividers — slightly lighter
         },
 
         // "clay" → lime green accent

@@ -46,10 +46,28 @@ export default async function Nav() {
         {/* Nav links */}
         <div className="flex items-center gap-1">
           <Link
+            href="/listen"
+            className="btn-ghost text-sm py-2 px-4"
+          >
+            Listen
+          </Link>
+          <Link
             href="/open-mic"
             className="btn-ghost text-sm py-2 px-4"
           >
             Open Mic
+          </Link>
+          <Link
+            href="/threads"
+            className="btn-ghost text-sm py-2 px-4"
+          >
+            Threads
+          </Link>
+          <Link
+            href="/about"
+            className="btn-ghost text-sm py-2 px-4"
+          >
+            About
           </Link>
 
           {user ? (

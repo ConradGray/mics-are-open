@@ -31,7 +31,15 @@ export default function SignUpPage() {
     setLoading(false);
 
     if (error) {
-      setError(error.message);
+      if (
+        error.message.toLowerCase().includes('already registered') ||
+        error.message.toLowerCase().includes('already in use') ||
+        error.message.toLowerCase().includes('already exists')
+      ) {
+        setError('An account with this email already exists. Try logging in instead.');
+      } else {
+        setError(error.message);
+      }
       return;
     }
 

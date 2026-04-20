@@ -9,8 +9,9 @@ import { createClient } from '@/lib/supabase/client';
 export default function AdminPostCard({ post, currentTab }) {
   const router = useRouter();
   const supabase = createClient();
-  const [acting, setActing] = useState(null); // 'approve' | 'reject' | 'delete' | 'winner'
+  const [acting, setActing] = useState(null); // 'approve' | 'reject' | 'delete' | 'winner' | 'hottake'
   const [error, setError] = useState(null);
+  const [isHotTake, setIsHotTake] = useState(post.is_hot_take || false);
   const [isWinner, setIsWinner] = useState(post.is_hot_take_winner || false);
 
   const profile = post.tmao_profiles;
@@ -35,6 +36,20 @@ export default function AdminPostCard({ post, currentTab }) {
       return;
     }
     router.refresh();
+    setActing(null);
+  }
+
+  async function toggleHotTake() {
+    setActing('hottake');
+    setError(null);
+    const newVal = !isHotTake;
+    const { error: err } = await supabase
+      .from('tmao_posts')
+      .update({ is_hot_take: newVal, ...(newVal === false ? { is_hot_take_winner: false } : {}) })
+      .eq('id', post.id);
+    if (err) { setError(err.message); setActing(null); return; }
+    setIsHotTake(newVal);
+    if (!newVal) setIsWinner(false);
     setActing(null);
   }
 
@@ -108,13 +123,15 @@ export default function AdminPostCard({ post, currentTab }) {
             <span className="text-ink-400 text-xs ml-auto shrink-0">{time}</span>
           </div>
 
-          {post.is_hot_take && (
+          {(isHotTake || isWinner) && (
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-clay-500/20 text-clay-500 border border-clay-500/30">
-                🔥 Hot Take
-              </span>
+              {isHotTake && (
+                <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-clay-500/20 text-clay-500 border border-clay-500/30">
+                  🔥 Hot Take
+                </span>
+              )}
               {isWinner && (
-                <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-clay-500 text-cream-50">
+                <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-clay-500 text-[#0D0D0D]">
                   👑 This week&apos;s winner
                 </span>
               )}
@@ -166,11 +183,25 @@ export default function AdminPostCard({ post, currentTab }) {
               </button>
             )}
 
-            {post.is_hot_take && !isWinner && currentTab === 'approved' && (
+            {currentTab === 'approved' && (
+              <button
+                onClick={toggleHotTake}
+                disabled={!!acting}
+                className={`inline-flex items-center gap-1.5 text-xs font-medium rounded-lg px-3 py-1.5 transition disabled:opacity-50 ${
+                  isHotTake
+                    ? 'bg-clay-500/20 text-clay-500 border border-clay-500/40 hover:bg-red-950/40 hover:text-red-400 hover:border-red-700/40'
+                    : 'bg-[#1e1e1e] text-ink-600 border border-[#2a2a2a] hover:bg-clay-500/20 hover:text-clay-500 hover:border-clay-500/40'
+                }`}
+              >
+                {acting === 'hottake' ? 'Updating…' : isHotTake ? '🔥 Unmark Hot Take' : '🔥 Mark as Hot Take'}
+              </button>
+            )}
+
+            {isHotTake && !isWinner && currentTab === 'approved' && (
               <button
                 onClick={makeHotTakeWinner}
                 disabled={!!acting}
-                className="inline-flex items-center gap-1.5 text-xs font-medium rounded-lg px-3 py-1.5 bg-clay-500/20 text-clay-500 border border-clay-500/40 hover:bg-clay-500 hover:text-cream-50 transition disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 text-xs font-medium rounded-lg px-3 py-1.5 bg-clay-500/20 text-clay-500 border border-clay-500/40 hover:bg-clay-500 hover:text-[#0D0D0D] transition disabled:opacity-50"
               >
                 {acting === 'winner' ? 'Setting…' : '👑 Make Winner'}
               </button>

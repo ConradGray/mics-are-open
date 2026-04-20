@@ -87,12 +87,19 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="mt-6 text-sm text-ink-400 text-center">
-          New here?{' '}
-          <Link href="/signup" className="text-clay-500 hover:text-clay-600 font-medium">
-            Create an account
-          </Link>
-        </p>
+        <div className="mt-6 space-y-3 text-sm text-center">
+          <p className="text-ink-400">
+            <Link href="/forgot-password" className="text-clay-500 hover:text-clay-600 font-medium">
+              Forgot your password?
+            </Link>
+          </p>
+          <p className="text-ink-400">
+            New here?{' '}
+            <Link href="/signup" className="text-clay-500 hover:text-clay-600 font-medium">
+              Create an account
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

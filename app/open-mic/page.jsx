@@ -16,7 +16,7 @@ export default async function WallPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Fetch approved posts with author profile, reaction counts, and reply counts
+  // Fetch approved posts with author profile, reactions, and replies (with author info for first reply preview)
   const { data: posts } = await supabase
     .from('tmao_posts')
     .select(`
@@ -24,7 +24,12 @@ export default async function WallPage() {
       tmao_profiles!tmao_posts_author_profile_fk (
         username, display_name, avatar_url
       ),
-      tmao_replies ( id ),
+      tmao_replies (
+        id, body, created_at,
+        tmao_profiles!tmao_replies_author_profile_fk (
+          username, display_name, avatar_url
+        )
+      ),
       tmao_reactions ( id, emoji, user_id )
     `)
     .eq('status', 'approved')
@@ -72,181 +77,59 @@ export default async function WallPage() {
           </p>
           <div className="w-10 h-0.5 bg-clay-500 mb-4" />
           
-          {/* Header with text and microphone SVG */}
-          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-8 mb-6">
-            {/* Text content */}
+          {/* Header */}
+          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-10 mb-6">
             <div className="flex-1">
               <h1 className="font-display text-[clamp(52px,8vw,88px)] leading-[0.90] text-ink-800">
                 Open Mic
               </h1>
-              <p className="mt-3 text-sm text-ink-600 leading-relaxed">
+              <p className="mt-3 text-sm text-ink-600 leading-relaxed max-w-md">
                 Short thoughts, reflections, reactions. Whatever the show sparked.
               </p>
             </div>
 
-            {/* Microphone SVG */}
-            <div className="hidden lg:flex flex-shrink-0">
-              <svg
-                width="200"
-                height="280"
-                viewBox="0 0 200 280"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="drop-shadow-lg"
-              >
-                {/* Microphone capsule - main rounded rectangle */}
-                <rect
-                  x="75"
-                  y="20"
-                  width="50"
-                  height="90"
-                  rx="25"
-                  fill="#C7FF00"
-                  stroke="#0D0D0D"
-                  strokeWidth="2"
-                />
+            {/* Handheld mic SVG — desktop only */}
+            <div className="hidden lg:block shrink-0 opacity-90">
+              <svg width="90" height="220" viewBox="0 0 90 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Glow behind capsule */}
+                <ellipse cx="45" cy="58" rx="34" ry="34" fill="#C7FF00" fillOpacity="0.08"/>
 
-                {/* Grill lines on capsule */}
-                <line
-                  x1="80"
-                  y1="35"
-                  x2="120"
-                  y2="35"
-                  stroke="#0D0D0D"
-                  strokeWidth="1.5"
-                  opacity="0.4"
-                />
-                <line
-                  x1="80"
-                  y1="50"
-                  x2="120"
-                  y2="50"
-                  stroke="#0D0D0D"
-                  strokeWidth="1.5"
-                  opacity="0.4"
-                />
-                <line
-                  x1="80"
-                  y1="65"
-                  x2="120"
-                  y2="65"
-                  stroke="#0D0D0D"
-                  strokeWidth="1.5"
-                  opacity="0.4"
-                />
-                <line
-                  x1="80"
-                  y1="80"
-                  x2="120"
-                  y2="80"
-                  stroke="#0D0D0D"
-                  strokeWidth="1.5"
-                  opacity="0.4"
-                />
-                <line
-                  x1="80"
-                  y1="95"
-                  x2="120"
-                  y2="95"
-                  stroke="#0D0D0D"
-                  strokeWidth="1.5"
-                  opacity="0.4"
-                />
+                {/* Capsule dome */}
+                <ellipse cx="45" cy="52" rx="28" ry="30" fill="#C7FF00"/>
 
-                {/* Neck - connecting stem */}
-                <rect
-                  x="90"
-                  y="105"
-                  width="20"
-                  height="50"
-                  fill="#C7FF00"
-                  stroke="#0D0D0D"
-                  strokeWidth="2"
-                />
+                {/* Mesh grill lines — horizontal */}
+                {[24,32,40,48,56,64,72,80].map((y) => (
+                  <line key={y} x1="17" y1={y} x2="73" y2={y} stroke="#0D0D0D" strokeWidth="1" opacity="0.25" strokeLinecap="round"/>
+                ))}
+                {/* Mesh grill lines — vertical arcs (approximate with lines) */}
+                {[22,30,38,45,52,60,68].map((x) => (
+                  <line key={x} x1={x} y1="24" x2={x} y2="80" stroke="#0D0D0D" strokeWidth="1" opacity="0.18" strokeLinecap="round"/>
+                ))}
 
-                {/* Neck band detail */}
-                <circle
-                  cx="100"
-                  cy="130"
-                  r="12"
-                  fill="none"
-                  stroke="#0D0D0D"
-                  strokeWidth="1.5"
-                  opacity="0.3"
-                />
+                {/* Capsule sheen highlight */}
+                <ellipse cx="36" cy="34" rx="10" ry="8" fill="white" fillOpacity="0.12" transform="rotate(-15 36 34)"/>
 
-                {/* Stand base - wider trapezoid */}
-                <path
-                  d="M 70 160 L 130 160 L 140 260 L 60 260 Z"
-                  fill="#C7FF00"
-                  stroke="#0D0D0D"
-                  strokeWidth="2"
-                />
+                {/* Neck ring */}
+                <rect x="32" y="79" width="26" height="10" rx="2" fill="#C7FF00" opacity="0.8"/>
+                <rect x="30" y="86" width="30" height="5" rx="2.5" fill="#C7FF00" opacity="0.5"/>
 
-                {/* Stand base shading - darker left side */}
-                <path
-                  d="M 70 160 L 95 160 L 100 260 L 60 260 Z"
-                  fill="#0D0D0D"
-                  opacity="0.15"
-                />
+                {/* Handle body */}
+                <rect x="33" y="91" width="24" height="90" rx="12" fill="#C7FF00"/>
 
-                {/* Stand vertical lines for detail */}
-                <line
-                  x1="80"
-                  y1="160"
-                  x2="75"
-                  y2="260"
-                  stroke="#0D0D0D"
-                  strokeWidth="1.5"
-                  opacity="0.2"
-                />
-                <line
-                  x1="100"
-                  y1="160"
-                  x2="100"
-                  y2="260"
-                  stroke="#0D0D0D"
-                  strokeWidth="1.5"
-                  opacity="0.2"
-                />
-                <line
-                  x1="120"
-                  y1="160"
-                  x2="125"
-                  y2="260"
-                  stroke="#0D0D0D"
-                  strokeWidth="1.5"
-                  opacity="0.2"
-                />
+                {/* Handle brand stripe */}
+                <rect x="33" y="115" width="24" height="3" rx="1.5" fill="#0D0D0D" opacity="0.2"/>
 
-                {/* Sound waves - decorative circles to the right */}
-                <circle
-                  cx="155"
-                  cy="65"
-                  r="8"
-                  fill="none"
-                  stroke="#C7FF00"
-                  strokeWidth="1.5"
-                  opacity="0.6"
-                />
-                <circle
-                  cx="155"
-                  cy="65"
-                  r="15"
-                  fill="none"
-                  stroke="#C7FF00"
-                  strokeWidth="1.5"
-                  opacity="0.4"
-                />
-                <circle
-                  cx="155"
-                  cy="65"
-                  r="22"
-                  fill="none"
-                  stroke="#C7FF00"
-                  strokeWidth="1.5"
-                  opacity="0.2"
-                />
+                {/* Handle lower grip lines */}
+                {[130, 138, 146, 154, 162, 170].map((y) => (
+                  <rect key={y} x="35" y={y} width="20" height="1.5" rx="0.75" fill="#0D0D0D" opacity="0.15"/>
+                ))}
+
+                {/* Handle bottom cap */}
+                <rect x="33" y="176" width="24" height="14" rx="12" fill="#C7FF00" opacity="0.7"/>
+
+                {/* Sound wave rings — right side */}
+                <path d="M 76 38 Q 86 52 76 66" stroke="#C7FF00" strokeWidth="2" fill="none" opacity="0.5" strokeLinecap="round"/>
+                <path d="M 81 30 Q 96 52 81 74" stroke="#C7FF00" strokeWidth="1.5" fill="none" opacity="0.3" strokeLinecap="round"/>
               </svg>
             </div>
           </div>

@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import AdminQueue from './AdminQueue';
+import ThreadCreateForm from './ThreadCreateForm';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,38 +27,30 @@ export default async function AdminPage() {
 
   if (!profile?.is_crew) redirect('/');
 
-  // Fetch all posts grouped by status
+  const POST_SELECT = `
+    id, body, status, created_at, author_id,
+    is_hot_take, is_hot_take_winner,
+    tmao_profiles!tmao_posts_author_profile_fk (
+      username, display_name, avatar_url
+    )
+  `;
+
   const { data: pending } = await supabase
     .from('tmao_posts')
-    .select(`
-      id, body, status, created_at, author_id,
-      tmao_profiles!tmao_posts_author_profile_fk (
-        username, display_name, avatar_url
-      )
-    `)
+    .select(POST_SELECT)
     .eq('status', 'pending')
     .order('created_at', { ascending: true });
 
   const { data: approved } = await supabase
     .from('tmao_posts')
-    .select(`
-      id, body, status, created_at, author_id,
-      tmao_profiles!tmao_posts_author_profile_fk (
-        username, display_name, avatar_url
-      )
-    `)
+    .select(POST_SELECT)
     .eq('status', 'approved')
     .order('created_at', { ascending: false })
     .limit(30);
 
   const { data: rejected } = await supabase
     .from('tmao_posts')
-    .select(`
-      id, body, status, created_at, author_id,
-      tmao_profiles!tmao_posts_author_profile_fk (
-        username, display_name, avatar_url
-      )
-    `)
+    .select(POST_SELECT)
     .eq('status', 'rejected')
     .order('created_at', { ascending: false })
     .limit(30);
@@ -75,6 +68,8 @@ export default async function AdminPage() {
           Review posts, approve what goes live, and keep the community feeling right.
         </p>
       </div>
+
+      <ThreadCreateForm userId={user.id} />
 
       <AdminQueue
         pending={pending || []}

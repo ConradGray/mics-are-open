@@ -7,62 +7,138 @@ export default async function HomePage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Fetch Hot Take of the Week winner
+  // Fetch Hot Take of the Week — explicitly picked winner
   const { data: hotTakeWinner } = await supabase
     .from('tmao_posts')
-    .select('id, body, author_id, profiles:tmao_profiles(username, display_name)')
-    .eq('is_hot_take_winner', true)
+    .select(`id, body, author_id,
+      tmao_profiles!tmao_posts_author_profile_fk ( username, display_name )`)
     .eq('status', 'approved')
+    .eq('is_hot_take_winner', true)
     .maybeSingle();
 
   return (
     <div className="flex flex-col">
 
       {/* ── Hero ────────────────────────────────────────── */}
-      <div className="pt-12 pb-16 md:pt-20 md:pb-24">
-        <p className="uppercase tracking-[0.3em] text-[10px] font-bold text-clay-500 mb-5 flex items-center gap-3">
-          <span className="inline-block w-8 h-px bg-clay-500" />
-          Kenya&rsquo;s #1 Podcast &nbsp;·&nbsp; Every Friday
-        </p>
+      <div className="pt-12 pb-16 md:pt-20 md:pb-24 grid md:grid-cols-2 md:gap-8 items-center">
 
-        <h1 className="font-display text-[clamp(64px,10vw,120px)] leading-[0.90] text-ink-800 mb-6">
-          THE MICS<br />ARE OPEN
-        </h1>
+        {/* Left: text */}
+        <div>
+          <p className="uppercase tracking-[0.3em] text-[10px] font-bold text-clay-500 mb-5 flex items-center gap-3">
+            <span className="inline-block w-8 h-px bg-clay-500" />
+            Kenya&rsquo;s #1 Podcast &nbsp;·&nbsp; Every Friday
+          </p>
 
-        <p className="max-w-lg text-base text-ink-600 leading-relaxed mb-10">
-          More than a podcast — it&rsquo;s a room full of people who heard the same
-          thing and felt something about it. Make a profile, drop something on Open Mic, and
-          meet the rest of us.
-        </p>
+          <h1 className="font-display text-[clamp(64px,10vw,120px)] leading-[0.90] text-ink-800 mb-6">
+            THE MICS<br />ARE OPEN
+          </h1>
 
-        <div className="flex gap-3 flex-wrap">
-          {user ? (
-            <Link href="/open-mic" className="btn-primary">
-              Open Mic →
-            </Link>
-          ) : (
-            <>
-              <Link href="/signup" className="btn-primary">
-                Join the community
+          <p className="max-w-lg text-base text-ink-600 leading-relaxed mb-10">
+            More than a podcast — it&rsquo;s a room full of people who heard the same
+            thing and felt something about it. Make a profile, drop something on Open Mic, and
+            meet the rest of us.
+          </p>
+
+          <div className="flex gap-3 flex-wrap">
+            {user ? (
+              <Link href="/open-mic" className="btn-primary">
+                Open Mic →
               </Link>
-              <Link href="/login" className="btn-ghost">
-                I already have an account
-              </Link>
-            </>
-          )}
+            ) : (
+              <>
+                <Link href="/signup" className="btn-primary">
+                  Join the community
+                </Link>
+                <Link href="/login" className="btn-ghost">
+                  I already have an account
+                </Link>
+              </>
+            )}
+          </div>
         </div>
+
+        {/* Right: polaroid collage — desktop */}
+        <div className="hidden md:block relative h-[580px]">
+          {[
+            { src: '/collage/c1.jpg', top: '-4%',  left: '-2%', rotate: '-6deg', zIndex: 2 },
+            { src: '/collage/c3.jpg', top: '22%',  left: '34%', rotate: '5deg',  zIndex: 3 },
+            { src: '/collage/c5.jpg', top: '52%',  left: '2%',  rotate: '-4deg', zIndex: 4 },
+          ].map((img, i) => (
+            <div
+              key={i}
+              style={{
+                position: 'absolute',
+                top: img.top,
+                left: img.left,
+                width: 340,
+                backgroundColor: '#ffffff',
+                padding: '14px 14px 56px 14px',
+                transform: `rotate(${img.rotate})`,
+                zIndex: img.zIndex,
+                boxShadow: '0 20px 60px rgba(0,0,0,0.75)',
+              }}
+            >
+              <img
+                src={img.src}
+                alt=""
+                style={{
+                  width: '100%',
+                  aspectRatio: '16/9',
+                  objectFit: 'cover',
+                  display: 'block',
+                }}
+              />
+            </div>
+          ))}
+          {/* Fade edges into background */}
+          <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-cream-50/60 pointer-events-none" style={{ zIndex: 10 }} />
+          <div className="absolute inset-0 bg-gradient-to-t from-cream-50/80 via-transparent to-transparent pointer-events-none" style={{ zIndex: 10 }} />
+        </div>
+
+        {/* Polaroid collage — mobile only */}
+        <div className="md:hidden flex justify-center gap-4 mt-10 mb-2">
+          {[
+            { src: '/collage/c1.jpg', rotate: '-5deg', mt: '0px' },
+            { src: '/collage/c3.jpg', rotate: '4deg',  mt: '20px' },
+          ].map((img, i) => (
+            <div
+              key={i}
+              style={{
+                width: '44%',
+                backgroundColor: '#ffffff',
+                padding: '10px 10px 38px 10px',
+                transform: `rotate(${img.rotate})`,
+                marginTop: img.mt,
+                boxShadow: '0 12px 40px rgba(0,0,0,0.6)',
+              }}
+            >
+              <img
+                src={img.src}
+                alt=""
+                style={{
+                  width: '100%',
+                  aspectRatio: '16/9',
+                  objectFit: 'cover',
+                  display: 'block',
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
       </div>
 
       {/* ── Stats bar ───────────────────────────────────── */}
-      <div className="grid grid-cols-3 border border-cream-200 mb-16">
+      <div className="grid grid-cols-3 border border-[#2a2a2a] rounded-2xl overflow-hidden mb-16 bg-[#161616]"
+           style={{boxShadow: '0 1px 3px rgba(0,0,0,0.5), 0 8px 32px -8px rgba(0,0,0,0.7)'}}>
         {[
-          ['335+', 'Episodes'],
+          ['500+', 'Episodes & Minisodes'],
           ['Every', 'Friday'],
           ['#1', 'In Kenya'],
         ].map(([val, lbl]) => (
-          <div key={lbl} className="px-8 py-5 border-r border-cream-200 last:border-r-0">
-            <p className="font-display text-4xl text-ink-800 leading-none">{val}</p>
-            <p className="text-[9px] font-bold uppercase tracking-[2.5px] text-clay-500 mt-1">{lbl}</p>
+          <div key={lbl} className="px-8 py-6 border-r border-[#2a2a2a] last:border-r-0">
+            <p className="font-display text-5xl text-clay-500 leading-none">{val}</p>
+            <p className="text-[9px] font-bold uppercase tracking-[2.5px] text-ink-600 mt-2">{lbl}</p>
           </div>
         ))}
       </div>
@@ -77,14 +153,14 @@ export default async function HomePage() {
         {hotTakeWinner ? (
           <Link
             href={`/open-mic/${hotTakeWinner.id}`}
-            className="block card border-clay-500/40 hover:border-clay-500 transition group"
+            className="block card-featured hover:border-clay-500/60 transition group"
           >
             <div className="flex items-center gap-2 mb-3">
               <span className="text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-clay-500 text-cream-50">
                 👑 Winner
               </span>
               <span className="text-xs text-ink-400">
-                @{hotTakeWinner.profiles?.username || 'listener'}
+                @{hotTakeWinner.tmao_profiles?.username || 'listener'}
               </span>
             </div>
             <p className="text-ink-800 leading-relaxed text-base">
@@ -95,9 +171,10 @@ export default async function HomePage() {
             </p>
           </Link>
         ) : (
-          <div className="card border-cream-200 text-center py-8">
-            <p className="text-ink-400 text-sm">No winner this week yet.</p>
-            <p className="text-ink-600 text-sm mt-1">
+          <div className="card text-center py-10 border-[#2a2a2a]">
+            <p className="text-2xl mb-3">🎙️</p>
+            <p className="text-ink-600 text-sm">No winner this week yet.</p>
+            <p className="text-ink-500 text-sm mt-1">
               Drop your hot take on{' '}
               <Link href="/open-mic" className="text-clay-500 hover:underline font-medium">
                 Open Mic
@@ -129,9 +206,10 @@ export default async function HomePage() {
           href="/open-mic"
         />
         <FeatureCard
-          badge="Coming soon"
+          badge="Now live"
           title="Episode Threads"
           body="Keep talking about the episode long after it ends."
+          href="/threads"
         />
       </section>
     </div>
@@ -144,15 +222,18 @@ function FeatureCard({ badge, title, body, href }) {
   return (
     <Wrapper
       href={href}
-      className={`card text-left group ${href ? 'cursor-pointer' : ''} ${
-        isLive && href ? 'hover:border-clay-500 transition' : ''
+      className={`card text-left group relative overflow-hidden ${href ? 'cursor-pointer' : ''} ${
+        isLive && href ? 'hover:border-clay-500/60 transition' : 'opacity-60'
       }`}
     >
+      {isLive && (
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-clay-500/40 to-transparent" />
+      )}
       <span
         className={`inline-block text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full ${
           isLive
-            ? 'bg-clay-50 text-clay-500 border border-clay-500/30'
-            : 'bg-cream-200 text-ink-400 border border-cream-200'
+            ? 'bg-clay-500/10 text-clay-500 border border-clay-500/30'
+            : 'bg-[#1e1e1e] text-ink-400 border border-[#2a2a2a]'
         }`}
       >
         {badge}
@@ -162,7 +243,7 @@ function FeatureCard({ badge, title, body, href }) {
       </h3>
       <p className="mt-2 text-sm text-ink-600 leading-relaxed">{body}</p>
       {isLive && href && (
-        <p className="mt-4 text-xs font-semibold text-clay-500 group-hover:underline">
+        <p className="mt-5 text-xs font-semibold text-clay-500 group-hover:underline">
           Open →
         </p>
       )}

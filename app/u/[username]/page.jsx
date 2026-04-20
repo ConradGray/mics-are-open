@@ -106,7 +106,7 @@ async function ProfilePosts({ profileId }) {
   if (!posts || posts.length === 0) {
     return (
       <div className="card text-center text-ink-400">
-        <p className="text-sm">No posts on the Wall yet.</p>
+        <p className="text-sm">No Open Mic posts yet.</p>
       </div>
     );
   }
