@@ -137,6 +137,7 @@ export default function AdminDashboard({
           { key: 'queue',    label: `Queue`, badge: pending.length || null },
           { key: 'hottakes', label: `Hot Takes`, badge: hotTakes.length || null },
           { key: 'threads',  label: `Threads`, badge: threads.length || null },
+          { key: 'members',  label: `Members`, badge: allUsers.length || null },
           { key: 'crew',     label: `Crew`, badge: null },
         ].map(t => (
           <button
@@ -272,6 +273,33 @@ export default function AdminDashboard({
           onDelete={handleThreadDelete}
           onUpdate={handleThreadUpdate}
         />
+      )}
+
+      {/* ── MEMBERS TAB ─────────────────────────────── */}
+      {tab === 'members' && (
+        <div>
+          <p className="text-xs text-ink-400 mb-4 uppercase tracking-wider">{allUsers.length} members signed up</p>
+          <div className="space-y-2">
+            {allUsers.map(user => (
+              <div key={user.id} className="card flex items-center gap-3 py-3">
+                <div className="w-8 h-8 rounded-full bg-cream-200 flex items-center justify-center shrink-0">
+                  <span className="font-display text-sm text-clay-500">
+                    {(user.display_name || user.username || '?').slice(0, 1).toUpperCase()}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-ink-800 text-sm">{user.display_name || 'No name'}</p>
+                  {user.username && <p className="text-xs text-ink-400">@{user.username}</p>}
+                </div>
+                {user.is_crew && (
+                  <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-clay-500/20 text-clay-500 border border-clay-500/30">
+                    Crew
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       )}
 
       {/* ── CREW TAB ────────────────────────────────── */}
