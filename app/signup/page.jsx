@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import Turnstile from '@/components/Turnstile';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -14,11 +15,39 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sentEmail, setSentEmail] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState(null);
+
+  const handleVerify = useCallback((token) => setCaptchaToken(token), []);
+  const handleCaptchaError = useCallback(() => {
+    setCaptchaToken(null);
+    setError('CAPTCHA failed. Please refresh and try again.');
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setLoading(true);
     setError(null);
+
+    // Verify CAPTCHA server-side first
+    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY) {
+      if (!captchaToken) {
+        setError('Please complete the CAPTCHA check.');
+        return;
+      }
+
+      const res = await fetch('/api/verify-captcha', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: captchaToken }),
+      });
+      const result = await res.json();
+      if (!result.success) {
+        setError(result.error || 'CAPTCHA verification failed.');
+        setCaptchaToken(null);
+        return;
+      }
+    }
+
+    setLoading(true);
 
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -43,7 +72,6 @@ export default function SignUpPage() {
       return;
     }
 
-    // If confirmations are OFF in Supabase settings, we'll have a session immediately.
     if (data.session) {
       router.push('/profile/setup');
       router.refresh();
@@ -109,6 +137,8 @@ export default function SignUpPage() {
               placeholder="At least 8 characters"
             />
           </div>
+
+          <Turnstile onVerify={handleVerify} onError={handleCaptchaError} />
 
           {error && (
             <p className="text-sm text-clay-600 bg-clay-50 border border-clay-100 rounded-lg p-3">

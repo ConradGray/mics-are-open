@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import Turnstile from '@/components/Turnstile';
 
 const MAX_LENGTH = 280;
 
@@ -15,8 +16,12 @@ export default function PostComposer({ userId }) {
   const [posting, setPosting] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState(null);
 
   const remaining = MAX_LENGTH - body.length;
+
+  const handleVerify = useCallback((token) => setCaptchaToken(token), []);
+  const handleCaptchaError = useCallback(() => setCaptchaToken(null), []);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -26,6 +31,26 @@ export default function PostComposer({ userId }) {
     if (trimmed.length > MAX_LENGTH) {
       setError('Post is too long.');
       return;
+    }
+
+    // Verify CAPTCHA server-side first
+    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY) {
+      if (!captchaToken) {
+        setError('Please complete the CAPTCHA check below.');
+        return;
+      }
+
+      const res = await fetch('/api/verify-captcha', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: captchaToken }),
+      });
+      const result = await res.json();
+      if (!result.success) {
+        setError('CAPTCHA verification failed. Please try again.');
+        setCaptchaToken(null);
+        return;
+      }
     }
 
     setPosting(true);
@@ -85,6 +110,8 @@ export default function PostComposer({ userId }) {
           </span>
         )}
       </div>
+
+      <Turnstile onVerify={handleVerify} onError={handleCaptchaError} />
 
       <div className="flex items-center justify-between mt-3">
         <span
