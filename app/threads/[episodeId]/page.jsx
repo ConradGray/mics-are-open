@@ -56,10 +56,10 @@ export default async function ThreadDetailPage({ params }) {
   return (
     <div className="max-w-2xl mx-auto">
       <Link
-        href="/threads"
+        href="/threads/all"
         className="inline-flex items-center gap-1 text-sm text-ink-400 hover:text-clay-500 transition mb-6"
       >
-        ← All threads
+        ← All episodes
       </Link>
 
       {/* Episode header */}

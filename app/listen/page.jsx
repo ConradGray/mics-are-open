@@ -155,6 +155,40 @@ export default function ListenPage() {
         ))}
       </div>
 
+      {/* ── Episode gallery ──────────────────────────────── */}
+      <div className="mb-10 mt-4">
+        <p className="uppercase tracking-[0.2em] text-[9px] font-bold text-ink-400 mb-4 flex items-center gap-2">
+          <span className="inline-block w-5 h-px bg-ink-300" />
+          From the studio
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {[
+            { src: '/collage/ep5.jpg', rotate: '-1.5deg' },
+            { src: '/collage/ep7.jpg', rotate: '1deg' },
+            { src: '/collage/ep6.jpg', rotate: '-0.5deg' },
+            { src: '/collage/ep9.jpg', rotate: '1.5deg' },
+            { src: '/collage/ep8.jpg', rotate: '-1deg' },
+            { src: '/collage/ep10.jpg', rotate: '0.5deg' },
+          ].map((img, i) => (
+            <div
+              key={i}
+              style={{
+                backgroundColor: '#ffffff',
+                padding: '8px 8px 32px 8px',
+                transform: `rotate(${img.rotate})`,
+                boxShadow: '0 8px 30px rgba(0,0,0,0.5)',
+              }}
+            >
+              <img
+                src={img.src}
+                alt=""
+                style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block' }}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* ── Community strip ──────────────────────────────── */}
       <div className="max-w-2xl border-t-2 border-clay-500 pt-8">
         <p className="text-ink-600 text-sm mb-4">Already a listener? Come talk about it.</p>
