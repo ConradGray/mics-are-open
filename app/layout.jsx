@@ -23,6 +23,7 @@ export default function RootLayout({ children }) {
             <div className="flex items-center gap-5">
               <a href="/about" className="text-xs text-ink-400 hover:text-clay-500 transition tracking-wider">About</a>
               <a href="/listen" className="text-xs text-ink-400 hover:text-clay-500 transition tracking-wider">Listen</a>
+              <a href="/privacy" className="text-xs text-ink-400 hover:text-clay-500 transition tracking-wider">Privacy</a>
               <a href="https://www.youtube.com/playlist?list=PLURaeuNWMwdy894eBMVPwR67ZDQpSWwsg" target="_blank" rel="noopener noreferrer" className="text-xs text-ink-400 hover:text-clay-500 transition tracking-wider">YouTube</a>
               <a href="https://open.spotify.com/show/6aU9hxLKdMIEzBfQ2IhYt6" target="_blank" rel="noopener noreferrer" className="text-xs text-ink-400 hover:text-clay-500 transition tracking-wider">Spotify</a>
               <a href="https://thegoodcompany.co.ke" target="_blank" rel="noopener noreferrer" className="text-xs text-ink-400 hover:text-clay-500 transition tracking-wider">thegoodcompany.co.ke</a>
