@@ -149,9 +149,9 @@ export default async function HomePage() {
           <Image
             src="/logo-tgc.png"
             alt="The Good Company"
-            width={120}
-            height={60}
-            className="h-14 w-auto opacity-80 shrink-0"
+            width={360}
+            height={180}
+            className="h-44 w-auto opacity-80 shrink-0"
           />
         </div>
 
