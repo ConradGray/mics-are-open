@@ -19,11 +19,34 @@ export default function AdminDashboard({
   hotTakes: initHotTakes,
   threads: initThreads,
   crew,
-  allUsers,
+  allUsers: initAllUsers,
   stats,
 }) {
   const [tab, setTab] = useState('queue');
   const [queueTab, setQueueTab] = useState('pending');
+  const [allUsers, setAllUsers] = useState(initAllUsers);
+  const [deletingUser, setDeletingUser] = useState(null);
+
+  async function handleDeleteUser(targetUser) {
+    if (!window.confirm(`Remove "${targetUser.display_name || targetUser.username || 'this user'}" from the community? This cannot be undone.`)) return;
+    setDeletingUser(targetUser.id);
+    try {
+      const res = await fetch('/api/admin/delete-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: targetUser.id }),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        alert(data.error || 'Failed to delete user.');
+      } else {
+        setAllUsers(prev => prev.filter(u => u.id !== targetUser.id));
+      }
+    } catch {
+      alert('Something went wrong. Please try again.');
+    }
+    setDeletingUser(null);
+  }
 
   // Local state for optimistic updates — no page reloads
   const [pending,  setPending]  = useState(initPending);
@@ -295,6 +318,15 @@ export default function AdminDashboard({
                   <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-clay-500/20 text-clay-500 border border-clay-500/30">
                     Crew
                   </span>
+                )}
+                {user.id !== userId && (
+                  <button
+                    onClick={() => handleDeleteUser(user)}
+                    disabled={deletingUser === user.id}
+                    className="text-xs text-ink-400 hover:text-red-500 transition px-2 py-1 rounded hover:bg-red-950/20 disabled:opacity-40 shrink-0"
+                  >
+                    {deletingUser === user.id ? 'Removing…' : 'Remove'}
+                  </button>
                 )}
               </div>
             ))}
