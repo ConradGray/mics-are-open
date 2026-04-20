@@ -104,7 +104,11 @@ export default function AdminDashboard({
       </div>
 
       {/* Stats bar */}
-      <div className="grid grid-cols-3 gap-3 mb-8">
+      <div className="grid grid-cols-4 gap-3 mb-8">
+        <div className="card py-4 text-center">
+          <p className="font-display text-3xl text-ink-800">{allUsers.length}</p>
+          <p className="text-xs text-ink-400 mt-1 uppercase tracking-wider">Members</p>
+        </div>
         <div className={`card py-4 text-center ${pending.length > 0 ? 'border border-clay-500/40' : ''}`}>
           <p className={`font-display text-3xl ${pending.length > 0 ? 'text-clay-500' : 'text-ink-800'}`}>
             {pending.length}
