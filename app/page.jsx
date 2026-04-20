@@ -33,11 +33,18 @@ export default async function HomePage() {
             THE MICS<br />ARE OPEN
           </h1>
 
-          <p className="max-w-lg text-base text-ink-600 leading-relaxed mb-10">
+          <p className="max-w-lg text-base text-ink-600 leading-relaxed mb-6">
             More than a podcast — it&rsquo;s a room full of people who heard the same
             thing and felt something about it. Make a profile, drop something on Open Mic, and
             meet the rest of us.
           </p>
+
+          <div className="max-w-lg bg-clay-500/10 border border-clay-500/30 rounded-xl px-5 py-4 mb-10">
+            <p className="text-sm text-ink-700 leading-relaxed">
+              <span className="font-bold text-clay-500">7 years and counting.</span>{' '}
+              We built this site for you — it&rsquo;s been 7 great years and this is your website. Look out for more features coming soon.
+            </p>
+          </div>
 
           <div className="flex gap-3 flex-wrap">
             {user ? (
