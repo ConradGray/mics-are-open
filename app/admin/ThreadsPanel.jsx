@@ -5,6 +5,26 @@ import { createClient } from '@/lib/supabase/client';
 
 const EMPTY_FORM = { episode_num: '', title: '', description: '', embed_url: '' };
 
+// Convert any YouTube or Spotify share link to a proper embed URL
+function toEmbedUrl(url) {
+  if (!url) return url;
+  const s = url.trim();
+
+  // YouTube: watch?v= or youtu.be/
+  const ytWatch = s.match(/youtube\.com\/watch\?.*v=([a-zA-Z0-9_-]+)/);
+  if (ytWatch) return `https://www.youtube.com/embed/${ytWatch[1]}`;
+
+  const ytShort = s.match(/youtu\.be\/([a-zA-Z0-9_-]+)/);
+  if (ytShort) return `https://www.youtube.com/embed/${ytShort[1]}`;
+
+  // Spotify: open.spotify.com/episode/ID (not already an embed)
+  const spEpisode = s.match(/open\.spotify\.com\/(?!embed)(episode|show|track)\/([a-zA-Z0-9]+)/);
+  if (spEpisode) return `https://open.spotify.com/embed/${spEpisode[1]}/${spEpisode[2]}`;
+
+  // Already an embed URL or SoundCloud — use as-is
+  return s;
+}
+
 export default function ThreadsPanel({ userId, threads, onCreate, onDelete, onUpdate }) {
   const supabase = createClient();
 
@@ -36,7 +56,7 @@ export default function ThreadsPanel({ userId, threads, onCreate, onDelete, onUp
       episode_num: form.episode_num ? parseInt(form.episode_num, 10) : null,
       title: form.title.trim(),
       description: form.description.trim() || null,
-      embed_url: form.embed_url.trim() || null,
+      embed_url: toEmbedUrl(form.embed_url) || null,
       created_by: userId,
     }).select().single();
 
@@ -70,11 +90,12 @@ export default function ThreadsPanel({ userId, threads, onCreate, onDelete, onUp
     setEditSaving(true);
     setEditError(null);
 
+    const embedUrl = toEmbedUrl(editForm.embed_url) || null;
     const { error } = await supabase.from('tmao_threads').update({
       episode_num: editForm.episode_num ? parseInt(editForm.episode_num, 10) : null,
       title: editForm.title.trim(),
       description: editForm.description.trim() || null,
-      embed_url: editForm.embed_url.trim() || null,
+      embed_url: embedUrl,
     }).eq('id', threadId);
 
     setEditSaving(false);
@@ -84,7 +105,7 @@ export default function ThreadsPanel({ userId, threads, onCreate, onDelete, onUp
       episode_num: editForm.episode_num ? parseInt(editForm.episode_num, 10) : null,
       title: editForm.title.trim(),
       description: editForm.description.trim() || null,
-      embed_url: editForm.embed_url.trim() || null,
+      embed_url: embedUrl,
     });
     setEditingId(null);
   }
@@ -136,8 +157,8 @@ export default function ThreadsPanel({ userId, threads, onCreate, onDelete, onUp
             </div>
             <div>
               <label className="block text-xs font-semibold text-ink-500 mb-1">Audio embed URL</label>
-              <input type="url" name="embed_url" value={form.embed_url} onChange={handleChange} placeholder="YouTube, Spotify, or SoundCloud embed URL" className="input text-sm" />
-              <p className="text-[11px] text-ink-400 mt-1">YouTube: Share → Embed → copy src URL · SoundCloud: Share → Embed → copy src URL</p>
+              <input type="url" name="embed_url" value={form.embed_url} onChange={handleChange} placeholder="Paste any YouTube or Spotify link" className="input text-sm" />
+              <p className="text-[11px] text-ink-400 mt-1">Paste the regular YouTube or Spotify link — no embed URL needed</p>
             </div>
             {createError && <p className="text-xs text-clay-600">{createError}</p>}
             <div className="flex items-center gap-2 pt-1">
