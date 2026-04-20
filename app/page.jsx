@@ -135,21 +135,6 @@ export default async function HomePage() {
 
       </div>
 
-      {/* ── Stats bar ───────────────────────────────────── */}
-      <div className="grid grid-cols-3 border border-[#2a2a2a] rounded-2xl overflow-hidden mb-16 bg-[#161616]"
-           style={{boxShadow: '0 1px 3px rgba(0,0,0,0.5), 0 8px 32px -8px rgba(0,0,0,0.7)'}}>
-        {[
-          ['500+', 'Episodes & Minisodes'],
-          ['Every', 'Friday'],
-          ['#1', 'In Kenya'],
-        ].map(([val, lbl]) => (
-          <div key={lbl} className="px-8 py-6 border-r border-[#2a2a2a] last:border-r-0">
-            <p className="font-display text-5xl text-clay-500 leading-none">{val}</p>
-            <p className="text-[9px] font-bold uppercase tracking-[2.5px] text-ink-600 mt-2">{lbl}</p>
-          </div>
-        ))}
-      </div>
-
       {/* ── Hot Take of the Week ────────────────────────── */}
       <div className="mb-16">
         <p className="uppercase tracking-[0.3em] text-[9px] font-bold text-clay-500 mb-3 flex items-center gap-2">
@@ -190,6 +175,21 @@ export default async function HomePage() {
             </p>
           </div>
         )}
+      </div>
+
+      {/* ── Stats bar ───────────────────────────────────── */}
+      <div className="grid grid-cols-3 border border-[#2a2a2a] rounded-2xl overflow-hidden mb-16 bg-[#161616]"
+           style={{boxShadow: '0 1px 3px rgba(0,0,0,0.5), 0 8px 32px -8px rgba(0,0,0,0.7)'}}>
+        {[
+          ['500+', 'Episodes & Minisodes'],
+          ['Every', 'Friday'],
+          ['#1', 'In Kenya'],
+        ].map(([val, lbl]) => (
+          <div key={lbl} className="px-8 py-6 border-r border-[#2a2a2a] last:border-r-0">
+            <p className="font-display text-5xl text-clay-500 leading-none">{val}</p>
+            <p className="text-[9px] font-bold uppercase tracking-[2.5px] text-ink-600 mt-2">{lbl}</p>
+          </div>
+        ))}
       </div>
 
       {/* ── Feature cards ───────────────────────────────── */}
