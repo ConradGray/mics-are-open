@@ -1,27 +1,22 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import AdminQueue from './AdminQueue';
-import ThreadCreateForm from './ThreadCreateForm';
+import AdminDashboard from './AdminDashboard';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Admin — The Mics Are Open',
+  title: 'Crew Dashboard — The Mics Are Open',
 };
 
 export default async function AdminPage() {
   const supabase = createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login?next=/admin');
 
-  // Check crew status
   const { data: profile } = await supabase
     .from('tmao_profiles')
-    .select('is_crew')
+    .select('is_crew, display_name')
     .eq('id', user.id)
     .maybeSingle();
 
@@ -35,47 +30,45 @@ export default async function AdminPage() {
     )
   `;
 
-  const { data: pending } = await supabase
-    .from('tmao_posts')
-    .select(POST_SELECT)
-    .eq('status', 'pending')
-    .order('created_at', { ascending: true });
+  // Fetch all queues in parallel
+  const [
+    { data: pending },
+    { data: approved },
+    { data: rejected },
+    { data: hotTakes },
+    { data: threads },
+  ] = await Promise.all([
+    supabase.from('tmao_posts').select(POST_SELECT).eq('status', 'pending').order('created_at', { ascending: true }),
+    supabase.from('tmao_posts').select(POST_SELECT).eq('status', 'approved').order('created_at', { ascending: false }).limit(50),
+    supabase.from('tmao_posts').select(POST_SELECT).eq('status', 'rejected').order('created_at', { ascending: false }).limit(30),
+    supabase.from('tmao_posts').select(POST_SELECT).eq('status', 'approved').eq('is_hot_take', true).order('created_at', { ascending: false }),
+    supabase.from('tmao_threads').select('id, episode_num, title, description, embed_url, published_at, created_by').order('published_at', { ascending: false }),
+  ]);
 
-  const { data: approved } = await supabase
+  // Stats: approved in the last 7 days
+  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const { count: approvedThisWeek } = await supabase
     .from('tmao_posts')
-    .select(POST_SELECT)
+    .select('id', { count: 'exact', head: true })
     .eq('status', 'approved')
-    .order('created_at', { ascending: false })
-    .limit(30);
+    .gte('created_at', weekAgo);
 
-  const { data: rejected } = await supabase
-    .from('tmao_posts')
-    .select(POST_SELECT)
-    .eq('status', 'rejected')
-    .order('created_at', { ascending: false })
-    .limit(30);
+  const winner = hotTakes?.find(p => p.is_hot_take_winner) || null;
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="mb-8">
-        <p className="uppercase tracking-[0.25em] text-xs font-semibold text-clay-500 mb-2">
-          Crew only
-        </p>
-        <h1 className="font-display text-4xl font-bold text-ink-800">
-          Admin Dashboard
-        </h1>
-        <p className="mt-2 text-ink-500">
-          Review posts, approve what goes live, and keep the community feeling right.
-        </p>
-      </div>
-
-      <ThreadCreateForm userId={user.id} />
-
-      <AdminQueue
-        pending={pending || []}
-        approved={approved || []}
-        rejected={rejected || []}
-      />
-    </div>
+    <AdminDashboard
+      userId={user.id}
+      crewName={profile.display_name || 'Crew'}
+      pending={pending || []}
+      approved={approved || []}
+      rejected={rejected || []}
+      hotTakes={hotTakes || []}
+      threads={threads || []}
+      stats={{
+        pending: (pending || []).length,
+        approvedThisWeek: approvedThisWeek || 0,
+        winner,
+      }}
+    />
   );
 }
