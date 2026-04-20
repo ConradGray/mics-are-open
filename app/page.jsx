@@ -140,7 +140,10 @@ export default async function HomePage() {
         <p className="uppercase tracking-[0.3em] text-[9px] font-bold text-clay-500 mb-3 flex items-center gap-2">
           🔥 Hot Take of the Week
         </p>
-        <div className="w-10 h-0.5 bg-clay-500 mb-6" />
+        <div className="w-10 h-0.5 bg-clay-500 mb-4" />
+        <h2 className="font-display text-[clamp(32px,5vw,52px)] leading-[0.95] text-ink-800 mb-6">
+          Hot Take of the Week
+        </h2>
 
         {hotTakeWinner ? (
           <Link
@@ -197,7 +200,10 @@ export default async function HomePage() {
         <p className="uppercase tracking-[0.3em] text-[9px] font-bold text-clay-500 mb-3">
           What&rsquo;s here
         </p>
-        <div className="w-10 h-0.5 bg-clay-500 mb-8" />
+        <div className="w-10 h-0.5 bg-clay-500 mb-4" />
+        <h2 className="font-display text-[clamp(32px,5vw,52px)] leading-[0.95] text-ink-800 mb-8">
+          What&rsquo;s here
+        </h2>
       </div>
 
       <section className="grid gap-5 md:grid-cols-3">
