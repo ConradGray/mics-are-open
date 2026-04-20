@@ -66,24 +66,8 @@ export default async function WallPage() {
           <div className="w-10 h-0.5 bg-clay-500 mb-6" />
 
           {/* Andy hero */}
-          <div className="flex items-start gap-5 mb-6">
-            <div
-              style={{
-                width: 90,
-                minWidth: 90,
-                backgroundColor: '#ffffff',
-                padding: '6px 6px 24px 6px',
-                transform: 'rotate(-2deg)',
-                boxShadow: '0 12px 40px rgba(0,0,0,0.6)',
-              }}
-            >
-              <img
-                src="/hosts/andy2.jpg"
-                alt="Andy Young"
-                style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
-              />
-            </div>
-            <div>
+          <div className="flex items-start justify-between gap-6 mb-6">
+            <div className="flex-1">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-clay-500 mb-1">Hosted by</p>
               <h1 className="font-display text-[clamp(40px,7vw,72px)] leading-[0.90] text-ink-800 mb-3">
                 Open Mic
@@ -91,6 +75,22 @@ export default async function WallPage() {
               <p className="text-sm text-ink-600 leading-relaxed max-w-sm">
                 Each week Andy gives you the chance to get our perspective on questions that you have. He goes through them all — leave your question below.
               </p>
+            </div>
+            <div
+              style={{
+                width: 160,
+                minWidth: 160,
+                backgroundColor: '#ffffff',
+                padding: '8px 8px 36px 8px',
+                transform: 'rotate(2deg)',
+                boxShadow: '0 16px 50px rgba(0,0,0,0.65)',
+              }}
+            >
+              <img
+                src="/hosts/andy3.jpg"
+                alt="Andy Young"
+                style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
+              />
             </div>
           </div>
         </div>
