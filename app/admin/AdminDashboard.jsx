@@ -5,6 +5,7 @@ import Image from 'next/image';
 import AdminPostCard from './AdminPostCard';
 import ThreadsPanel from './ThreadsPanel';
 import CrewPanel from './CrewPanel';
+import { createClient } from '@/lib/supabase/client';
 
 const QUEUE_TABS = [
   { key: 'pending',  label: 'Pending' },
@@ -21,14 +22,18 @@ export default function AdminDashboard({
   threads: initThreads,
   crew,
   allUsers: initAllUsers,
+  spotlightProfileId: initSpotlightProfileId,
   stats,
 }) {
+  const supabase = createClient();
   const [tab, setTab] = useState('queue');
   const [queueTab, setQueueTab] = useState('pending');
   const [allUsers, setAllUsers] = useState(initAllUsers);
   const [deletingUser, setDeletingUser] = useState(null);
   const [revealedEmails, setRevealedEmails] = useState({});
   const [loadingEmail, setLoadingEmail] = useState(null);
+  const [spotlightProfileId, setSpotlightProfileId] = useState(initSpotlightProfileId);
+  const [settingSpotlight, setSettingSpotlight] = useState(null);
 
   async function handleRevealEmail(targetUserId) {
     if (revealedEmails[targetUserId]) return;
@@ -116,6 +121,25 @@ export default function AdminDashboard({
   function handleWinner(postId) {
     setHotTakes(ps => ps.map(x => ({ ...x, is_hot_take_winner: x.id === postId })));
     setApproved(ps => ps.map(x => ({ ...x, is_hot_take_winner: x.id === postId })));
+  }
+
+  async function handleSetSpotlight(targetUserId) {
+    const isRemoving = spotlightProfileId === targetUserId;
+    setSettingSpotlight(targetUserId);
+    const { error } = await supabase
+      .from('tmao_spotlight')
+      .update({
+        profile_id: isRemoving ? null : targetUserId,
+        set_at: new Date().toISOString(),
+        is_auto: false,
+      })
+      .eq('id', 1);
+    if (!error) {
+      setSpotlightProfileId(isRemoving ? null : targetUserId);
+    } else {
+      alert('Failed to update spotlight. ' + error.message);
+    }
+    setSettingSpotlight(null);
   }
 
   function handleThreadCreate(thread) {
@@ -329,51 +353,78 @@ export default function AdminDashboard({
       {/* ── MEMBERS TAB ─────────────────────────────── */}
       {tab === 'members' && (
         <div>
-          <p className="text-xs text-ink-400 mb-4 uppercase tracking-wider">{allUsers.length} members signed up</p>
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-xs text-ink-400 uppercase tracking-wider">{allUsers.length} members signed up</p>
+            {spotlightProfileId && (
+              <p className="text-xs text-clay-500 font-medium">
+                ⭐ Spotlight active
+              </p>
+            )}
+          </div>
           <div className="space-y-2">
-            {allUsers.map(user => (
-              <div key={user.id} className="card flex items-center gap-3 py-3">
-                <div className="relative w-8 h-8 rounded-full bg-cream-200 overflow-hidden flex items-center justify-center shrink-0">
-                  {user.avatar_url ? (
-                    <Image src={user.avatar_url} alt="" fill sizes="32px" className="object-cover" />
-                  ) : (
-                    <span className="font-display text-sm text-clay-500">
-                      {(user.display_name || user.username || '?').slice(0, 1).toUpperCase()}
+            {allUsers.map(user => {
+              const isSpotlit = spotlightProfileId === user.id;
+              return (
+                <div key={user.id} className={`card flex items-center gap-3 py-3 ${isSpotlit ? 'border-clay-500/40' : ''}`}>
+                  <div className="relative w-8 h-8 rounded-full bg-cream-200 overflow-hidden flex items-center justify-center shrink-0">
+                    {user.avatar_url ? (
+                      <Image src={user.avatar_url} alt="" fill sizes="32px" className="object-cover" />
+                    ) : (
+                      <span className="font-display text-sm text-clay-500">
+                        {(user.display_name || user.username || '?').slice(0, 1).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-ink-800 text-sm">{user.display_name || 'No name'}</p>
+                    {user.username && <p className="text-xs text-ink-400">@{user.username}</p>}
+                    {revealedEmails[user.id] && (
+                      <p className="text-xs text-clay-500 mt-0.5 font-mono">{revealedEmails[user.id]}</p>
+                    )}
+                  </div>
+                  {isSpotlit && (
+                    <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-clay-500/20 text-clay-500 border border-clay-500/30 shrink-0">
+                      ⭐ Spotlight
                     </span>
                   )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-ink-800 text-sm">{user.display_name || 'No name'}</p>
-                  {user.username && <p className="text-xs text-ink-400">@{user.username}</p>}
-                  {revealedEmails[user.id] && (
-                    <p className="text-xs text-clay-500 mt-0.5 font-mono">{revealedEmails[user.id]}</p>
+                  {user.is_crew && (
+                    <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-clay-500/20 text-clay-500 border border-clay-500/30 shrink-0">
+                      Crew
+                    </span>
+                  )}
+                  <button
+                    onClick={() => handleSetSpotlight(user.id)}
+                    disabled={settingSpotlight === user.id}
+                    className={`text-xs transition px-2 py-1 rounded shrink-0 ${
+                      isSpotlit
+                        ? 'text-clay-500 hover:text-ink-400 hover:bg-cream-200'
+                        : 'text-ink-400 hover:text-clay-500 hover:bg-cream-200'
+                    } disabled:opacity-40`}
+                    title={isSpotlit ? 'Remove from spotlight' : 'Set as spotlight'}
+                  >
+                    {settingSpotlight === user.id ? '…' : isSpotlit ? '★ Remove' : '☆ Spotlight'}
+                  </button>
+                  {!revealedEmails[user.id] && (
+                    <button
+                      onClick={() => handleRevealEmail(user.id)}
+                      disabled={loadingEmail === user.id}
+                      className="text-xs text-ink-400 hover:text-clay-500 transition px-2 py-1 rounded hover:bg-cream-200 disabled:opacity-40 shrink-0"
+                    >
+                      {loadingEmail === user.id ? '…' : 'Email'}
+                    </button>
+                  )}
+                  {user.id !== userId && (
+                    <button
+                      onClick={() => handleDeleteUser(user)}
+                      disabled={deletingUser === user.id}
+                      className="text-xs text-ink-400 hover:text-red-500 transition px-2 py-1 rounded hover:bg-red-950/20 disabled:opacity-40 shrink-0"
+                    >
+                      {deletingUser === user.id ? 'Removing…' : 'Remove'}
+                    </button>
                   )}
                 </div>
-                {user.is_crew && (
-                  <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-clay-500/20 text-clay-500 border border-clay-500/30 shrink-0">
-                    Crew
-                  </span>
-                )}
-                {!revealedEmails[user.id] && (
-                  <button
-                    onClick={() => handleRevealEmail(user.id)}
-                    disabled={loadingEmail === user.id}
-                    className="text-xs text-ink-400 hover:text-clay-500 transition px-2 py-1 rounded hover:bg-cream-200 disabled:opacity-40 shrink-0"
-                  >
-                    {loadingEmail === user.id ? '…' : 'Email'}
-                  </button>
-                )}
-                {user.id !== userId && (
-                  <button
-                    onClick={() => handleDeleteUser(user)}
-                    disabled={deletingUser === user.id}
-                    className="text-xs text-ink-400 hover:text-red-500 transition px-2 py-1 rounded hover:bg-red-950/20 disabled:opacity-40 shrink-0"
-                  >
-                    {deletingUser === user.id ? 'Removing…' : 'Remove'}
-                  </button>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

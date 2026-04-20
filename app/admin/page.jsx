@@ -38,6 +38,7 @@ export default async function AdminPage() {
     { data: hotTakes },
     { data: threads },
     { data: allUsers },
+    { data: spotlightRow },
   ] = await Promise.all([
     supabase.from('tmao_posts').select(POST_SELECT).eq('status', 'pending').order('created_at', { ascending: true }),
     supabase.from('tmao_posts').select(POST_SELECT).eq('status', 'approved').order('created_at', { ascending: false }).limit(50),
@@ -45,6 +46,7 @@ export default async function AdminPage() {
     supabase.from('tmao_posts').select(POST_SELECT).eq('status', 'approved').eq('is_hot_take', true).order('created_at', { ascending: false }),
     supabase.from('tmao_threads').select('id, episode_num, title, description, embed_url, published_at, created_by').order('published_at', { ascending: false }),
     supabase.from('tmao_profiles').select('id, username, display_name, avatar_url, is_crew').order('display_name', { ascending: true }),
+    supabase.from('tmao_spotlight').select('profile_id').eq('id', 1).maybeSingle(),
   ]);
 
   const crew = (allUsers || []).filter(u => u.is_crew);
@@ -70,6 +72,7 @@ export default async function AdminPage() {
       threads={threads || []}
       crew={crew}
       allUsers={allUsers || []}
+      spotlightProfileId={spotlightRow?.profile_id || null}
       stats={{
         pending: (pending || []).length,
         approvedThisWeek: approvedThisWeek || 0,

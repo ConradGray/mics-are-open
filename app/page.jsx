@@ -17,6 +17,23 @@ export default async function HomePage() {
     .eq('is_hot_take_winner', true)
     .maybeSingle();
 
+  // Fetch Listener Spotlight
+  const { data: spotlightRow } = await supabase
+    .from('tmao_spotlight')
+    .select('profile_id, set_at')
+    .eq('id', 1)
+    .maybeSingle();
+
+  let spotlight = null;
+  if (spotlightRow?.profile_id) {
+    const { data: sp } = await supabase
+      .from('tmao_profiles')
+      .select('id, username, display_name, location, bio, avatar_url')
+      .eq('id', spotlightRow.profile_id)
+      .maybeSingle();
+    spotlight = sp;
+  }
+
   return (
     <div className="flex flex-col">
 
@@ -172,6 +189,73 @@ export default async function HomePage() {
               </Link>{' '}
               — the crew picks every week.
             </p>
+          </div>
+        )}
+      </div>
+
+      {/* ── Listener Spotlight ──────────────────────────── */}
+      <div className="mb-16">
+        <p className="uppercase tracking-[0.3em] text-[9px] font-bold text-clay-500 mb-3 flex items-center gap-2">
+          ⭐ Listener Spotlight
+        </p>
+        <div className="w-10 h-0.5 bg-clay-500 mb-4" />
+        <h2 className="font-display text-[clamp(32px,5vw,52px)] leading-[0.95] text-ink-800 mb-6">
+          Listener Spotlight
+        </h2>
+
+        {spotlight ? (
+          <Link
+            href={`/u/${spotlight.username}`}
+            className="block card-featured hover:border-clay-500/60 transition group"
+          >
+            <div className="flex items-start gap-5">
+              <div className="relative w-20 h-20 rounded-full bg-cream-200 overflow-hidden flex items-center justify-center shrink-0">
+                {spotlight.avatar_url ? (
+                  <Image
+                    src={spotlight.avatar_url}
+                    alt={spotlight.display_name || spotlight.username}
+                    fill
+                    sizes="80px"
+                    className="object-cover"
+                  />
+                ) : (
+                  <span className="font-display text-3xl text-clay-500">
+                    {(spotlight.display_name || spotlight.username || '?').slice(0, 1).toUpperCase()}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <span className="text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-clay-500/10 text-clay-500 border border-clay-500/30">
+                    ⭐ This week&apos;s listener
+                  </span>
+                </div>
+                <h3 className="font-display text-2xl text-ink-800 mt-2">
+                  {spotlight.display_name || spotlight.username}
+                </h3>
+                {spotlight.username && (
+                  <p className="text-ink-400 text-sm">@{spotlight.username}</p>
+                )}
+                {spotlight.location && (
+                  <p className="text-ink-500 text-sm mt-0.5">📍 {spotlight.location}</p>
+                )}
+                {spotlight.bio && (
+                  <p className="mt-3 text-ink-600 text-sm leading-relaxed line-clamp-2 italic">
+                    &ldquo;{spotlight.bio}&rdquo;
+                  </p>
+                )}
+                <p className="mt-4 text-xs font-semibold text-clay-500 group-hover:underline">
+                  View profile →
+                </p>
+              </div>
+            </div>
+          </Link>
+        ) : (
+          <div className="card text-center py-10 border-[#2a2a2a]">
+            <p className="text-2xl mb-3">⭐</p>
+            <p className="text-ink-600 text-sm">No spotlight this week yet.</p>
+            <p className="text-ink-500 text-sm mt-1">Check back soon.</p>
           </div>
         )}
       </div>
