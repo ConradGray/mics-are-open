@@ -10,6 +10,7 @@ export default function SignUpPage() {
   const router = useRouter();
   const supabase = createClient();
 
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,6 +27,11 @@ export default function SignUpPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
+
+    if (!name.trim()) {
+      setError('Please enter your name.');
+      return;
+    }
 
     // Verify CAPTCHA server-side first
     if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY) {
@@ -53,6 +59,7 @@ export default function SignUpPage() {
       email,
       password,
       options: {
+        data: { display_name: name.trim() },
         emailRedirectTo: `${window.location.origin}/auth/callback?next=/profile/setup`,
       },
     });
@@ -105,6 +112,23 @@ export default function SignUpPage() {
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <div>
+            <label className="label" htmlFor="name">
+              Your name
+            </label>
+            <input
+              id="name"
+              type="text"
+              required
+              autoComplete="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="input"
+              placeholder="What should people call you?"
+              maxLength={60}
+            />
+          </div>
+
           <div>
             <label className="label" htmlFor="email">
               Email
