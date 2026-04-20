@@ -61,7 +61,7 @@ export default function ListenPage() {
       {/* ── Hero: two-column on desktop ─────────────────── */}
       <div className="grid md:grid-cols-2 gap-8 items-start pt-12 pb-10 md:pt-20 md:pb-12">
 
-        {/* Left: heading */}
+        {/* Left: heading + platform links */}
         <div>
           <p className="uppercase tracking-[0.3em] text-[9px] font-bold text-clay-500 mb-3 flex items-center gap-3">
             <span className="inline-block w-8 h-px bg-clay-500" />
@@ -71,9 +71,30 @@ export default function ListenPage() {
           <h1 className="font-display text-[clamp(48px,7vw,96px)] leading-[0.90] text-ink-800">
             Listen
           </h1>
-          <p className="mt-4 text-sm text-ink-600 leading-relaxed max-w-sm">
+          <p className="mt-4 mb-8 text-sm text-ink-600 leading-relaxed max-w-sm">
             Find The Mics Are Open wherever you listen to podcasts.
           </p>
+
+          {/* Compact platform buttons */}
+          <div className="space-y-3">
+            {platforms.map((platform) => (
+              <a
+                key={platform.name}
+                href={platform.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition group ${platform.borderColor} max-w-xs`}
+              >
+                <div className={`w-9 h-9 rounded-lg ${platform.bgColor} ${platform.color} flex items-center justify-center shrink-0`}>
+                  <div className="w-5 h-5">{platform.icon}</div>
+                </div>
+                <span className={`font-semibold text-sm text-ink-700 group-hover:${platform.color} transition`}>
+                  {platform.name}
+                </span>
+                <span className="ml-auto text-ink-400 group-hover:translate-x-0.5 transition-transform text-sm">→</span>
+              </a>
+            ))}
+          </div>
         </div>
 
         {/* Right: polaroids — desktop */}
@@ -129,30 +150,6 @@ export default function ListenPage() {
             </div>
           ))}
         </div>
-      </div>
-
-      {/* ── Platform cards ───────────────────────────────── */}
-      <div className="max-w-2xl space-y-4 mb-10">
-        {platforms.map((platform) => (
-          <a
-            key={platform.name}
-            href={platform.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`card flex items-center gap-5 border-2 transition group ${platform.borderColor}`}
-          >
-            <div className={`w-14 h-14 rounded-xl ${platform.bgColor} ${platform.color} flex items-center justify-center shrink-0`}>
-              {platform.icon}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-display text-xl text-ink-800 group-hover:text-clay-500 transition">
-                {platform.name}
-              </p>
-              <p className="text-sm text-ink-500 mt-0.5">{platform.description}</p>
-            </div>
-            <span className="text-ink-400 group-hover:text-clay-500 text-lg transition shrink-0">→</span>
-          </a>
-        ))}
       </div>
 
       {/* ── Episode gallery ──────────────────────────────── */}
