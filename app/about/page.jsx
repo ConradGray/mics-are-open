@@ -7,10 +7,10 @@ export const metadata = {
 };
 
 const hosts = [
-  { name: 'G Money',    initials: 'G',  ig: 'https://www.instagram.com/gmoneyizme' },
-  { name: 'Calvin',     initials: 'C',  ig: 'https://www.instagram.com/calvinwanguku' },
-  { name: 'Ashley',     initials: 'A',  ig: 'https://www.instagram.com/ashleymuthui' },
-  { name: 'Andy Young', initials: 'AY', ig: 'https://www.instagram.com/andy_young254' },
+  { name: 'G Money',    initials: 'G',  photo: '/hosts/gmoney.jpg',  photoPos: 'center top',    ig: 'https://www.instagram.com/gmoneyizme' },
+  { name: 'Calvin',     initials: 'C',  photo: '/hosts/calvin.jpg',  photoPos: 'center top',    ig: 'https://www.instagram.com/calvinwanguku' },
+  { name: 'Ashley',     initials: 'A',  photo: '/hosts/ashley.jpg',  photoPos: 'center 20%',    ig: 'https://www.instagram.com/ashleymuthui' },
+  { name: 'Andy Young', initials: 'AY', photo: '/hosts/andy.jpg',    photoPos: 'center top',    ig: 'https://www.instagram.com/andy_young254' },
 ];
 
 const polaroids = [
@@ -143,10 +143,12 @@ export default function AboutPage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {hosts.map((host) => (
               <div key={host.name} className="card text-center py-6 flex flex-col items-center">
-                <div className="w-14 h-14 rounded-full bg-clay-500 flex items-center justify-center mx-auto mb-3">
-                  <span className="font-display text-xl text-cream-50">
-                    {host.initials}
-                  </span>
+                <div className="w-20 h-20 rounded-full overflow-hidden mx-auto mb-3 border-2 border-cream-200">
+                  <img
+                    src={host.photo}
+                    alt={host.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: host.photoPos }}
+                  />
                 </div>
                 <p className="font-display text-lg text-ink-800 mb-3">{host.name}</p>
                 {host.ig ? (
