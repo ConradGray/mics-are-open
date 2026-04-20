@@ -136,8 +136,8 @@ export default function ThreadsPanel({ userId, threads, onCreate, onDelete, onUp
             </div>
             <div>
               <label className="block text-xs font-semibold text-ink-500 mb-1">Audio embed URL</label>
-              <input type="url" name="embed_url" value={form.embed_url} onChange={handleChange} placeholder="SoundCloud or Spotify embed URL" className="input text-sm" />
-              <p className="text-[11px] text-ink-400 mt-1">SoundCloud: Share → Embed → copy the src URL</p>
+              <input type="url" name="embed_url" value={form.embed_url} onChange={handleChange} placeholder="YouTube, Spotify, or SoundCloud embed URL" className="input text-sm" />
+              <p className="text-[11px] text-ink-400 mt-1">YouTube: Share → Embed → copy src URL · SoundCloud: Share → Embed → copy src URL</p>
             </div>
             {createError && <p className="text-xs text-clay-600">{createError}</p>}
             <div className="flex items-center gap-2 pt-1">
@@ -179,7 +179,7 @@ export default function ThreadsPanel({ userId, threads, onCreate, onDelete, onUp
                     <textarea name="description" value={editForm.description} onChange={handleEditChange} rows={2} className="input resize-none text-sm" />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-ink-500 mb-1">Audio embed URL</label>
+                    <label className="block text-xs font-semibold text-ink-500 mb-1">Embed URL (YouTube, Spotify, or SoundCloud)</label>
                     <input type="url" name="embed_url" value={editForm.embed_url} onChange={handleEditChange} className="input text-sm" />
                   </div>
                   {editError && <p className="text-xs text-clay-600">{editError}</p>}

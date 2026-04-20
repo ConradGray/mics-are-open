@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import AdminPostCard from './AdminPostCard';
 import ThreadsPanel from './ThreadsPanel';
+import CrewPanel from './CrewPanel';
 
 const QUEUE_TABS = [
   { key: 'pending',  label: 'Pending' },
@@ -17,6 +18,8 @@ export default function AdminDashboard({
   rejected: initRejected,
   hotTakes: initHotTakes,
   threads: initThreads,
+  crew,
+  allUsers,
   stats,
 }) {
   const [tab, setTab] = useState('queue');
@@ -130,6 +133,7 @@ export default function AdminDashboard({
           { key: 'queue',    label: `Queue`, badge: pending.length || null },
           { key: 'hottakes', label: `Hot Takes`, badge: hotTakes.length || null },
           { key: 'threads',  label: `Threads`, badge: threads.length || null },
+          { key: 'crew',     label: `Crew`, badge: null },
         ].map(t => (
           <button
             key={t.key}
@@ -263,6 +267,15 @@ export default function AdminDashboard({
           onCreate={handleThreadCreate}
           onDelete={handleThreadDelete}
           onUpdate={handleThreadUpdate}
+        />
+      )}
+
+      {/* ── CREW TAB ────────────────────────────────── */}
+      {tab === 'crew' && (
+        <CrewPanel
+          currentUserId={userId}
+          crew={crew}
+          allUsers={allUsers}
         />
       )}
     </div>

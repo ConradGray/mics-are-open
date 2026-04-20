@@ -80,21 +80,47 @@ export default async function ThreadDetailPage({ params }) {
           </p>
         )}
 
-        {/* Audio embed */}
+        {/* Audio / Video embed */}
         {thread.embed_url && (
           <div className="mt-4 border-t border-cream-200 pt-4">
             <p className="text-xs font-semibold uppercase tracking-wider text-ink-400 mb-2">
               Listen
             </p>
-            <iframe
-              src={thread.embed_url}
-              width="100%"
-              height="166"
-              frameBorder="0"
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-              className="rounded-lg"
-              title={`Episode ${thread.episode_num || ''}: ${thread.title}`}
-            />
+            {/youtube\.com\/embed|youtu\.be/.test(thread.embed_url) ? (
+              // YouTube — 16:9 aspect ratio
+              <div className="relative w-full rounded-lg overflow-hidden" style={{ paddingBottom: '56.25%' }}>
+                <iframe
+                  src={thread.embed_url}
+                  className="absolute inset-0 w-full h-full"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  title={`Episode ${thread.episode_num || ''}: ${thread.title}`}
+                />
+              </div>
+            ) : /open\.spotify\.com\/embed/.test(thread.embed_url) ? (
+              // Spotify — tall player
+              <iframe
+                src={thread.embed_url}
+                width="100%"
+                height="352"
+                frameBorder="0"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                className="rounded-xl"
+                title={`Episode ${thread.episode_num || ''}: ${thread.title}`}
+              />
+            ) : (
+              // SoundCloud (and fallback)
+              <iframe
+                src={thread.embed_url}
+                width="100%"
+                height="166"
+                frameBorder="0"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                className="rounded-lg"
+                title={`Episode ${thread.episode_num || ''}: ${thread.title}`}
+              />
+            )}
           </div>
         )}
       </div>
