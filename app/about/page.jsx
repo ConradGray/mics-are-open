@@ -7,11 +7,17 @@ export const metadata = {
 };
 
 const hosts = [
-  { name: 'G Money',    initials: 'G',  photo: '/hosts/gmoney.jpg',  photoPos: '65% 15%',  photoScale: 1.6,  ig: 'https://www.instagram.com/gmoneyizme' },
-  { name: 'Calvin',     initials: 'C',  photo: '/hosts/calvin.jpg',  photoPos: '35% 15%',  photoScale: 1.5,  ig: 'https://www.instagram.com/calvinwanguku' },
-  { name: 'Ashley',     initials: 'A',  photo: '/hosts/ashley.jpg',  photoPos: '55% 22%',  photoScale: 1.5,  ig: 'https://www.instagram.com/ashleymuthui' },
-  { name: 'Andy Young', initials: 'AY', photo: '/hosts/andy.jpg',    photoPos: 'center top', photoScale: 1.0, ig: 'https://www.instagram.com/andy_young254' },
+  { name: 'G Money',    photo: '/hosts/gmoney2.jpg', ig: 'https://www.instagram.com/gmoneyizme' },
+  { name: 'Calvin',     photo: '/hosts/calvin2.jpg', ig: 'https://www.instagram.com/calvinwanguku' },
+  { name: 'Ashley',     photo: '/hosts/ashley2.jpg', ig: 'https://www.instagram.com/ashleymuthui' },
+  { name: 'Andy Young', photo: '/hosts/andy2.jpg',   ig: 'https://www.instagram.com/andy_young254' },
 ];
+
+const IG_ICON = (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+  </svg>
+);
 
 const polaroids = [
   { src: '/collage/c2.jpg', top: '0%',  left: '5%',  rotate: '-7deg', zIndex: 2 },
@@ -26,7 +32,7 @@ export default function AboutPage() {
       {/* ── Hero: two-column on desktop ─────────────────── */}
       <div className="grid md:grid-cols-2 gap-8 items-start pt-12 pb-10 md:pt-20 md:pb-16">
 
-        {/* Left: text */}
+        {/* Left: text + hosts */}
         <div>
           <p className="uppercase tracking-[0.3em] text-[9px] font-bold text-clay-500 mb-3 flex items-center gap-3">
             <span className="inline-block w-8 h-px bg-clay-500" />
@@ -36,9 +42,36 @@ export default function AboutPage() {
           <h1 className="font-display text-[clamp(52px,8vw,96px)] leading-[0.90] text-ink-800 mb-8">
             The Mics<br />Are Open
           </h1>
-          <p className="font-display text-xl text-ink-700 leading-snug border-l-4 border-clay-500 pl-6">
+          <p className="font-display text-xl text-ink-700 leading-snug border-l-4 border-clay-500 pl-6 mb-10">
             Some podcasts are produced. The Mics Are Open just happens.
           </p>
+
+          {/* Host grid — 2×2 */}
+          <div className="grid grid-cols-2 gap-4">
+            {hosts.map((host) => (
+              <a
+                key={host.name}
+                href={host.ig}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center gap-3 p-3 rounded-xl border border-cream-200/20 hover:border-clay-500/40 transition"
+              >
+                <div className="w-14 h-14 rounded-full overflow-hidden shrink-0 border-2 border-cream-200/30 group-hover:border-clay-500/50 transition">
+                  <img
+                    src={host.photo}
+                    alt={host.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
+                  />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-semibold text-ink-800 text-sm leading-tight">{host.name}</p>
+                  <span className="inline-flex items-center gap-1 text-[11px] text-ink-400 group-hover:text-[#E1306C] transition mt-0.5">
+                    {IG_ICON} Instagram
+                  </span>
+                </div>
+              </a>
+            ))}
+          </div>
         </div>
 
         {/* Right: polaroid collage — desktop */}
@@ -133,42 +166,6 @@ export default function AboutPage() {
           <p className="font-semibold text-ink-700">
             Available weekly wherever you get your podcasts.
           </p>
-        </div>
-
-        {/* Hosts */}
-        <div className="mb-12">
-          <p className="uppercase tracking-[0.2em] text-[9px] font-bold text-clay-500 mb-6">
-            The Hosts
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {hosts.map((host) => (
-              <div key={host.name} className="card text-center py-6 flex flex-col items-center">
-                <div className="w-20 h-20 rounded-full overflow-hidden mx-auto mb-3 border-2 border-cream-200">
-                  <img
-                    src={host.photo}
-                    alt={host.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: host.photoPos, transform: `scale(${host.photoScale})`, transformOrigin: host.photoPos }}
-                  />
-                </div>
-                <p className="font-display text-lg text-ink-800 mb-3">{host.name}</p>
-                {host.ig ? (
-                  <a
-                    href={host.ig}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink-400 hover:text-[#E1306C] transition px-3 py-1.5 rounded-full border border-cream-200 hover:border-[#E1306C]/40"
-                  >
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                    </svg>
-                    Instagram
-                  </a>
-                ) : (
-                  <span className="text-xs text-ink-300">—</span>
-                )}
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* CTA strip */}
