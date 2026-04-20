@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
 export default function ResetPasswordPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -14,15 +15,30 @@ export default function ResetPasswordPage() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // In the PKCE flow the auth callback already exchanged the code server-side,
-    // so PASSWORD_RECOVERY never fires client-side. Check for an active session
-    // directly on mount to handle that case.
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) setReady(true);
-    });
+    const token_hash = searchParams.get('token_hash');
+    const type = searchParams.get('type');
 
-    // Keep the listener as a fallback for the legacy hash-based (implicit) flow
-    // where PASSWORD_RECOVERY does fire client-side.
+    if (token_hash && type) {
+      // Token-hash flow: link goes directly to this page with token in the URL.
+      // Works in any browser context — no PKCE cookie required.
+      supabase.auth.verifyOtp({ token_hash, type }).then(({ error }) => {
+        if (error) {
+          setError('This reset link has expired or has already been used. Please request a new one.');
+        } else {
+          setReady(true);
+        }
+      });
+    } else {
+      // Fallback: PKCE flow where callback already established a session.
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+          setReady(true);
+        } else {
+          setError('Invalid reset link. Please request a new one.');
+        }
+      });
+    }
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY') setReady(true);
     });
@@ -60,8 +76,17 @@ export default function ResetPasswordPage() {
   if (!ready) {
     return (
       <div className="max-w-md mx-auto mt-8">
-        <div className="card text-center text-ink-400">
-          <p className="text-sm">Verifying your reset link…</p>
+        <div className="card text-center space-y-3">
+          {error ? (
+            <>
+              <p className="text-sm text-clay-500">{error}</p>
+              <a href="/forgot-password" className="inline-block text-sm text-clay-500 hover:text-clay-600 font-medium">
+                Request a new reset link →
+              </a>
+            </>
+          ) : (
+            <p className="text-sm text-ink-400">Verifying your reset link…</p>
+          )}
         </div>
       </div>
     );
