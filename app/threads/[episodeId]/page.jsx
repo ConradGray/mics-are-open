@@ -38,8 +38,7 @@ export default async function ThreadDetailPage({ params }) {
       id, body, created_at, author_id,
       tmao_profiles!tmao_thread_replies_author_fk (
         username, display_name, avatar_url
-      ),
-      tmao_reactions ( id, emoji, user_id )
+      )
     `)
     .eq('thread_id', thread.id)
     .order('created_at', { ascending: true });
@@ -47,6 +46,24 @@ export default async function ThreadDetailPage({ params }) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Fetch reactions for all replies separately (more reliable than nested select)
+  const replyIds = (replies || []).map((r) => r.id);
+  const { data: allReactions } = replyIds.length > 0
+    ? await supabase
+        .from('tmao_reactions')
+        .select('id, emoji, user_id, thread_reply_id')
+        .in('thread_reply_id', replyIds)
+    : { data: [] };
+
+  // Group reactions by reply id
+  const reactionsByReply = {};
+  for (const reaction of allReactions || []) {
+    if (!reactionsByReply[reaction.thread_reply_id]) {
+      reactionsByReply[reaction.thread_reply_id] = [];
+    }
+    reactionsByReply[reaction.thread_reply_id].push(reaction);
+  }
 
   const publishedAt = new Date(thread.published_at).toLocaleDateString(undefined, {
     weekday: 'long',
@@ -155,7 +172,7 @@ export default async function ThreadDetailPage({ params }) {
           <div className="space-y-3">
             {replies.map((reply) => {
               const profile = reply.tmao_profiles;
-              const reactions = reply.tmao_reactions || [];
+              const reactions = reactionsByReply[reply.id] || [];
               const ago = timeAgo(reply.created_at);
 
               return (
