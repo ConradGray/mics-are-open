@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 import PostComposer from './PostComposer';
 import PostCard from './PostCard';
@@ -56,7 +57,7 @@ export default async function WallPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-4xl mx-auto">
       <div>
         <div className="mb-8">
           <p className="uppercase tracking-[0.3em] text-[9px] font-bold text-clay-500 mb-3 flex items-center gap-3">
@@ -86,11 +87,9 @@ export default async function WallPage() {
                 boxShadow: '0 16px 50px rgba(0,0,0,0.65)',
               }}
             >
-              <img
-                src="/hosts/andy3.jpg"
-                alt="Andy Young"
-                style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
-              />
+              <div style={{ position: 'relative', width: '100%', aspectRatio: '1/1' }}>
+                <Image src="/hosts/andy3.jpg" alt="Andy Young" fill sizes="160px" style={{ objectFit: 'cover', objectPosition: 'center top' }} />
+              </div>
             </div>
           </div>
         </div>

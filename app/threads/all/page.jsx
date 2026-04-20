@@ -19,7 +19,7 @@ export default async function AllThreadsPage() {
     .order('published_at', { ascending: false });
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-4xl mx-auto">
       <div className="mb-8">
         <p className="uppercase tracking-[0.3em] text-[9px] font-bold text-clay-500 mb-3 flex items-center gap-3">
           <span className="inline-block w-8 h-px bg-clay-500" />

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export const metadata = {
   title: 'Listen — The Mics Are Open',
@@ -114,11 +115,9 @@ export default function ListenPage() {
                 boxShadow: '0 20px 60px rgba(0,0,0,0.75)',
               }}
             >
-              <img
-                src={img.src}
-                alt=""
-                style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block' }}
-              />
+              <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
+                <Image src={img.src} alt="" fill sizes="280px" style={{ objectFit: 'cover' }} />
+              </div>
             </div>
           ))}
           <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-cream-50/60 pointer-events-none" style={{ zIndex: 10 }} />
@@ -142,11 +141,9 @@ export default function ListenPage() {
                 boxShadow: '0 12px 40px rgba(0,0,0,0.6)',
               }}
             >
-              <img
-                src={img.src}
-                alt=""
-                style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block' }}
-              />
+              <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
+                <Image src={img.src} alt="" fill sizes="280px" style={{ objectFit: 'cover' }} />
+              </div>
             </div>
           ))}
         </div>
@@ -176,11 +173,9 @@ export default function ListenPage() {
                 boxShadow: '0 8px 30px rgba(0,0,0,0.5)',
               }}
             >
-              <img
-                src={img.src}
-                alt=""
-                style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block' }}
-              />
+              <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
+                <Image src={img.src} alt="" fill sizes="280px" style={{ objectFit: 'cover' }} />
+              </div>
             </div>
           ))}
         </div>

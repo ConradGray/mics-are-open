@@ -86,16 +86,9 @@ export default async function HomePage() {
                 boxShadow: '0 20px 60px rgba(0,0,0,0.75)',
               }}
             >
-              <img
-                src={img.src}
-                alt=""
-                style={{
-                  width: '100%',
-                  aspectRatio: '16/9',
-                  objectFit: 'cover',
-                  display: 'block',
-                }}
-              />
+              <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
+                <Image src={img.src} alt="" fill sizes="340px" style={{ objectFit: 'cover' }} />
+              </div>
             </div>
           ))}
           {/* Fade edges into background */}
@@ -120,16 +113,9 @@ export default async function HomePage() {
                 boxShadow: '0 12px 40px rgba(0,0,0,0.6)',
               }}
             >
-              <img
-                src={img.src}
-                alt=""
-                style={{
-                  width: '100%',
-                  aspectRatio: '16/9',
-                  objectFit: 'cover',
-                  display: 'block',
-                }}
-              />
+              <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
+                <Image src={img.src} alt="" fill sizes="44vw" style={{ objectFit: 'cover' }} />
+              </div>
             </div>
           ))}
         </div>
