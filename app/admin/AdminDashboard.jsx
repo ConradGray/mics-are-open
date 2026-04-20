@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import AdminPostCard from './AdminPostCard';
 import ThreadsPanel from './ThreadsPanel';
 import CrewPanel from './CrewPanel';
@@ -326,10 +327,14 @@ export default function AdminDashboard({
           <div className="space-y-2">
             {allUsers.map(user => (
               <div key={user.id} className="card flex items-center gap-3 py-3">
-                <div className="w-8 h-8 rounded-full bg-cream-200 flex items-center justify-center shrink-0">
-                  <span className="font-display text-sm text-clay-500">
-                    {(user.display_name || user.username || '?').slice(0, 1).toUpperCase()}
-                  </span>
+                <div className="relative w-8 h-8 rounded-full bg-cream-200 overflow-hidden flex items-center justify-center shrink-0">
+                  {user.avatar_url ? (
+                    <Image src={user.avatar_url} alt="" fill sizes="32px" className="object-cover" />
+                  ) : (
+                    <span className="font-display text-sm text-clay-500">
+                      {(user.display_name || user.username || '?').slice(0, 1).toUpperCase()}
+                    </span>
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-ink-800 text-sm">{user.display_name || 'No name'}</p>
