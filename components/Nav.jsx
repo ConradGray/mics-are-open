@@ -45,30 +45,13 @@ export default async function Nav() {
 
         {/* Nav links */}
         <div className="flex items-center gap-1">
-          <Link
-            href="/listen"
-            className="btn-ghost text-sm py-2 px-4"
-          >
-            Listen
-          </Link>
-          <Link
-            href="/open-mic"
-            className="btn-ghost text-sm py-2 px-4"
-          >
-            Open Mic
-          </Link>
-          <Link
-            href="/threads"
-            className="btn-ghost text-sm py-2 px-4"
-          >
-            Threads
-          </Link>
-          <Link
-            href="/about"
-            className="btn-ghost text-sm py-2 px-4"
-          >
-            About
-          </Link>
+          <Link href="/about" className="btn-ghost text-sm py-2 px-4">About</Link>
+          <Link href="/open-mic" className="btn-ghost text-sm py-2 px-4">Open Mic</Link>
+          <Link href="/threads" className="btn-ghost text-sm py-2 px-4">Threads</Link>
+          <Link href="/listen" className="btn-ghost text-sm py-2 px-4">Listen</Link>
+
+          {/* Divider before auth actions */}
+          <span className="w-px h-5 bg-cream-200 mx-2" />
 
           {user ? (
             <>
@@ -80,22 +63,15 @@ export default async function Nav() {
                   Admin
                 </Link>
               )}
-              <Link
-                href="/me"
-                className="btn-ghost text-sm py-2 px-4"
-              >
+              <Link href="/me" className="btn-ghost text-sm py-2 px-4">
                 {profile?.display_name || 'My Profile'}
               </Link>
               <SignOutButton />
             </>
           ) : (
             <>
-              <Link href="/login" className="btn-ghost text-sm py-2 px-4">
-                Log in
-              </Link>
-              <Link href="/signup" className="btn-primary text-sm py-2 px-5">
-                Join TMAO
-              </Link>
+              <Link href="/login" className="btn-ghost text-sm py-2 px-4">Log in</Link>
+              <Link href="/signup" className="btn-primary text-sm py-2 px-5">Join TMAO</Link>
             </>
           )}
         </div>
