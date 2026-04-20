@@ -136,6 +136,7 @@ export default async function WallPage() {
             </div>
           )}
         </div>
+      </div>
     </div>
   );
 }
