@@ -3,8 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 import ReactionBar from '../ReactionBar';
-import ReplyComposer from './ReplyComposer';
-import ReplyCard from './ReplyCard';
+import OpenMicRepliesSection from './OpenMicRepliesSection';
 
 export const dynamic = 'force-dynamic';
 
@@ -133,35 +132,12 @@ export default async function PostDetailPage({ params }) {
         <h2 className="font-display text-xl font-semibold text-ink-800 mb-4">
           {replies?.length ? `Replies (${replies.length})` : 'Replies'}
         </h2>
-
-        {user ? (
-          <ReplyComposer postId={post.id} userId={user.id} />
-        ) : (
-          <div className="card text-center mb-4">
-            <p className="text-ink-500 text-sm">
-              <a href={`/login?next=/open-mic/${post.id}`} className="text-clay-500 hover:text-clay-600 font-medium">
-                Log in
-              </a>{' '}
-              to reply.
-            </p>
-          </div>
-        )}
-
-        {replies && replies.length > 0 ? (
-          <div className="space-y-3">
-            {replies.map((reply) => (
-              <ReplyCard
-                key={reply.id}
-                reply={reply}
-                currentUserId={user?.id}
-              />
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-ink-400 text-center py-4">
-            No replies yet. Start the conversation.
-          </p>
-        )}
+        <OpenMicRepliesSection
+          postId={post.id}
+          userId={user?.id || null}
+          replies={replies || []}
+          currentUserId={user?.id || null}
+        />
       </div>
     </div>
   );

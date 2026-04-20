@@ -1,11 +1,12 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import ReactionBar from '../ReactionBar';
 
-export default function ReplyCard({ reply, currentUserId }) {
+export default function ReplyCard({ reply, currentUserId, onReplyTo }) {
   const profile = reply.tmao_profiles;
   const reactions = reply.tmao_reactions || [];
-
   const ago = timeAgo(reply.created_at);
 
   return (
@@ -43,12 +44,20 @@ export default function ReplyCard({ reply, currentUserId }) {
           <p className="mt-1 text-ink-600 text-sm leading-relaxed whitespace-pre-wrap break-words">
             {reply.body}
           </p>
-          <div className="mt-2">
+          <div className="mt-2 flex items-center gap-3">
             <ReactionBar
               replyId={reply.id}
               reactions={reactions}
               currentUserId={currentUserId}
             />
+            {onReplyTo && profile?.username && (
+              <button
+                onClick={() => onReplyTo(profile.username)}
+                className="text-xs text-ink-400 hover:text-clay-500 transition ml-auto"
+              >
+                Reply
+              </button>
+            )}
           </div>
         </div>
       </div>

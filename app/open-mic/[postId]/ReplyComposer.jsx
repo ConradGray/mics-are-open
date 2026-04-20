@@ -1,18 +1,25 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
 const MAX_LENGTH = 280;
 
-export default function ReplyComposer({ postId, userId }) {
+const ReplyComposer = forwardRef(function ReplyComposer(
+  { postId, userId, replyTo, onClear },
+  ref
+) {
   const router = useRouter();
   const supabase = createClient();
 
   const [body, setBody] = useState('');
   const [posting, setPosting] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (replyTo) setBody(replyTo);
+  }, [replyTo]);
 
   const remaining = MAX_LENGTH - body.length;
 
@@ -38,12 +45,14 @@ export default function ReplyComposer({ postId, userId }) {
     }
 
     setBody('');
+    onClear?.();
     router.refresh();
   }
 
   return (
     <form onSubmit={handleSubmit} className="card mb-4">
       <textarea
+        ref={ref}
         className="input resize-none text-sm"
         rows={2}
         maxLength={MAX_LENGTH}
@@ -72,4 +81,6 @@ export default function ReplyComposer({ postId, userId }) {
       </div>
     </form>
   );
-}
+});
+
+export default ReplyComposer;
