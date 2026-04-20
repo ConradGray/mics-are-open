@@ -7,10 +7,10 @@ export const metadata = {
 };
 
 const hosts = [
-  { name: 'G Money',    photo: '/hosts/gmoney2.jpg', ig: 'https://www.instagram.com/gmoneyizme' },
+  { name: 'G Money',    photo: '/hosts/andy2.jpg',   ig: 'https://www.instagram.com/gmoneyizme' },
   { name: 'Calvin',     photo: '/hosts/calvin2.jpg', ig: 'https://www.instagram.com/calvinwanguku' },
   { name: 'Ashley',     photo: '/hosts/ashley2.jpg', ig: 'https://www.instagram.com/ashleymuthui' },
-  { name: 'Andy Young', photo: '/hosts/andy2.jpg',   ig: 'https://www.instagram.com/andy_young254' },
+  { name: 'Andy Young', photo: '/hosts/gmoney2.jpg', ig: 'https://www.instagram.com/andy_young254' },
 ];
 
 const IG_ICON = (
