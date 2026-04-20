@@ -82,6 +82,15 @@ export default async function PublicProfilePage({ params }) {
         )}
       </div>
 
+      {isOwner && (
+        <div className="mt-6">
+          <h2 className="font-display text-xl font-semibold text-ink-800 mb-4">
+            Replies to your posts
+          </h2>
+          <RecentReplies profileId={profile.id} />
+        </div>
+      )}
+
       <div className="mt-6">
         <h2 className="font-display text-xl font-semibold text-ink-800 mb-4">
           Open Mic posts
@@ -90,6 +99,107 @@ export default async function PublicProfilePage({ params }) {
       </div>
     </div>
   );
+}
+
+async function RecentReplies({ profileId }) {
+  const supabase = createClient();
+
+  // Get this user's approved post IDs
+  const { data: userPosts } = await supabase
+    .from('tmao_posts')
+    .select('id')
+    .eq('author_id', profileId)
+    .eq('status', 'approved');
+
+  const postIds = (userPosts || []).map((p) => p.id);
+
+  if (postIds.length === 0) {
+    return (
+      <div className="card text-center text-ink-400">
+        <p className="text-sm">No replies yet — post something on Open Mic to get the conversation going.</p>
+      </div>
+    );
+  }
+
+  const { data: replies } = await supabase
+    .from('tmao_replies')
+    .select(`
+      id, body, created_at, post_id,
+      tmao_profiles!tmao_replies_author_profile_fk (
+        username, display_name, avatar_url
+      )
+    `)
+    .in('post_id', postIds)
+    .order('created_at', { ascending: false })
+    .limit(20);
+
+  if (!replies || replies.length === 0) {
+    return (
+      <div className="card text-center text-ink-400">
+        <p className="text-sm">No replies yet — they'll show up here when people respond to your posts.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {replies.map((reply) => {
+        const author = reply.tmao_profiles;
+        const ago = timeAgo(reply.created_at);
+        return (
+          <Link
+            key={reply.id}
+            href={`/open-mic/${reply.post_id}`}
+            className="card block hover:border-clay-200 transition"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <div className="relative w-6 h-6 rounded-full bg-cream-200 overflow-hidden flex items-center justify-center shrink-0">
+                {author?.avatar_url ? (
+                  <Image
+                    src={author.avatar_url}
+                    alt=""
+                    fill
+                    sizes="24px"
+                    className="object-cover"
+                  />
+                ) : (
+                  <span className="font-display text-[10px] text-clay-500">
+                    {(author?.display_name || '?').slice(0, 1).toUpperCase()}
+                  </span>
+                )}
+              </div>
+              <span className="text-sm font-semibold text-ink-800">
+                {author?.display_name || 'Listener'}
+              </span>
+              {author?.username && (
+                <span className="text-xs text-ink-400">@{author.username}</span>
+              )}
+              <span className="text-xs text-ink-400 ml-auto shrink-0">{ago}</span>
+            </div>
+            <p className="text-ink-600 text-sm leading-relaxed line-clamp-2">
+              {reply.body}
+            </p>
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
+function timeAgo(dateStr) {
+  const now = Date.now();
+  const then = new Date(dateStr).getTime();
+  const diffSec = Math.floor((now - then) / 1000);
+
+  if (diffSec < 60) return 'just now';
+  if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m`;
+  if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h`;
+  if (diffSec < 2592000) return `${Math.floor(diffSec / 86400)}d`;
+
+  return new Date(dateStr).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+  });
 }
 
 async function ProfilePosts({ profileId }) {
