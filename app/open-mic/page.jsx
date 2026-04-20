@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server';
-import Image from 'next/image';
 import PostComposer from './PostComposer';
 import PostCard from './PostCard';
 
@@ -57,80 +56,41 @@ export default async function WallPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto relative">
-      {/* Silhouette background watermark */}
-      <div className="absolute top-0 right-0 w-96 h-96 opacity-10 pointer-events-none z-0">
-        <Image
-          src="/silhouette-hero.png"
-          alt=""
-          fill
-          className="object-cover"
-          priority={false}
-        />
-      </div>
-
-      <div className="relative z-10">
+    <div className="max-w-2xl mx-auto">
+      <div>
         <div className="mb-8">
           <p className="uppercase tracking-[0.3em] text-[9px] font-bold text-clay-500 mb-3 flex items-center gap-3">
             <span className="inline-block w-8 h-px bg-clay-500" />
             Community feed
           </p>
-          <div className="w-10 h-0.5 bg-clay-500 mb-4" />
-          
-          {/* Header */}
-          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-10 mb-6">
-            <div className="flex-1">
-              <h1 className="font-display text-[clamp(52px,8vw,88px)] leading-[0.90] text-ink-800">
+          <div className="w-10 h-0.5 bg-clay-500 mb-6" />
+
+          {/* Andy hero */}
+          <div className="flex items-start gap-5 mb-6">
+            <div
+              style={{
+                width: 90,
+                minWidth: 90,
+                backgroundColor: '#ffffff',
+                padding: '6px 6px 24px 6px',
+                transform: 'rotate(-2deg)',
+                boxShadow: '0 12px 40px rgba(0,0,0,0.6)',
+              }}
+            >
+              <img
+                src="/hosts/andy2.jpg"
+                alt="Andy Young"
+                style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
+              />
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-clay-500 mb-1">Hosted by</p>
+              <h1 className="font-display text-[clamp(40px,7vw,72px)] leading-[0.90] text-ink-800 mb-3">
                 Open Mic
               </h1>
-              <p className="mt-3 text-sm text-ink-600 leading-relaxed max-w-md">
-                Short thoughts, reflections, reactions. Whatever the show sparked.
+              <p className="text-sm text-ink-600 leading-relaxed max-w-sm">
+                Each week Andy gives you the chance to get our perspective on questions that you have. He goes through them all — leave your question below.
               </p>
-            </div>
-
-            {/* Handheld mic SVG — desktop only */}
-            <div className="hidden lg:block shrink-0 opacity-90">
-              <svg width="90" height="220" viewBox="0 0 90 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-                {/* Glow behind capsule */}
-                <ellipse cx="45" cy="58" rx="34" ry="34" fill="#C7FF00" fillOpacity="0.08"/>
-
-                {/* Capsule dome */}
-                <ellipse cx="45" cy="52" rx="28" ry="30" fill="#C7FF00"/>
-
-                {/* Mesh grill lines — horizontal */}
-                {[24,32,40,48,56,64,72,80].map((y) => (
-                  <line key={y} x1="17" y1={y} x2="73" y2={y} stroke="#0D0D0D" strokeWidth="1" opacity="0.25" strokeLinecap="round"/>
-                ))}
-                {/* Mesh grill lines — vertical arcs (approximate with lines) */}
-                {[22,30,38,45,52,60,68].map((x) => (
-                  <line key={x} x1={x} y1="24" x2={x} y2="80" stroke="#0D0D0D" strokeWidth="1" opacity="0.18" strokeLinecap="round"/>
-                ))}
-
-                {/* Capsule sheen highlight */}
-                <ellipse cx="36" cy="34" rx="10" ry="8" fill="white" fillOpacity="0.12" transform="rotate(-15 36 34)"/>
-
-                {/* Neck ring */}
-                <rect x="32" y="79" width="26" height="10" rx="2" fill="#C7FF00" opacity="0.8"/>
-                <rect x="30" y="86" width="30" height="5" rx="2.5" fill="#C7FF00" opacity="0.5"/>
-
-                {/* Handle body */}
-                <rect x="33" y="91" width="24" height="90" rx="12" fill="#C7FF00"/>
-
-                {/* Handle brand stripe */}
-                <rect x="33" y="115" width="24" height="3" rx="1.5" fill="#0D0D0D" opacity="0.2"/>
-
-                {/* Handle lower grip lines */}
-                {[130, 138, 146, 154, 162, 170].map((y) => (
-                  <rect key={y} x="35" y={y} width="20" height="1.5" rx="0.75" fill="#0D0D0D" opacity="0.15"/>
-                ))}
-
-                {/* Handle bottom cap */}
-                <rect x="33" y="176" width="24" height="14" rx="12" fill="#C7FF00" opacity="0.7"/>
-
-                {/* Sound wave rings — right side */}
-                <path d="M 76 38 Q 86 52 76 66" stroke="#C7FF00" strokeWidth="2" fill="none" opacity="0.5" strokeLinecap="round"/>
-                <path d="M 81 30 Q 96 52 81 74" stroke="#C7FF00" strokeWidth="1.5" fill="none" opacity="0.3" strokeLinecap="round"/>
-              </svg>
             </div>
           </div>
         </div>
@@ -176,7 +136,6 @@ export default async function WallPage() {
             </div>
           )}
         </div>
-      </div>
     </div>
   );
 }
