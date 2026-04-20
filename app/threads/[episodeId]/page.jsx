@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 import ThreadReplyComposer from './ThreadReplyComposer';
+import ThreadReactionBar from './ThreadReactionBar';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,7 +38,8 @@ export default async function ThreadDetailPage({ params }) {
       id, body, created_at, author_id,
       tmao_profiles!tmao_thread_replies_author_fk (
         username, display_name, avatar_url
-      )
+      ),
+      tmao_reactions ( id, emoji, user_id )
     `)
     .eq('thread_id', thread.id)
     .order('created_at', { ascending: true });
@@ -153,6 +155,7 @@ export default async function ThreadDetailPage({ params }) {
           <div className="space-y-3">
             {replies.map((reply) => {
               const profile = reply.tmao_profiles;
+              const reactions = reply.tmao_reactions || [];
               const ago = timeAgo(reply.created_at);
 
               return (
@@ -193,6 +196,13 @@ export default async function ThreadDetailPage({ params }) {
                       <p className="mt-1 text-ink-600 text-sm leading-relaxed whitespace-pre-wrap break-words">
                         {reply.body}
                       </p>
+                      <div className="mt-2">
+                        <ThreadReactionBar
+                          threadReplyId={reply.id}
+                          reactions={reactions}
+                          currentUserId={user?.id || null}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
