@@ -26,6 +26,27 @@ export default function AdminDashboard({
   const [queueTab, setQueueTab] = useState('pending');
   const [allUsers, setAllUsers] = useState(initAllUsers);
   const [deletingUser, setDeletingUser] = useState(null);
+  const [revealedEmails, setRevealedEmails] = useState({});
+  const [loadingEmail, setLoadingEmail] = useState(null);
+
+  async function handleRevealEmail(targetUserId) {
+    if (revealedEmails[targetUserId]) return;
+    setLoadingEmail(targetUserId);
+    try {
+      const res = await fetch('/api/admin/get-user-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: targetUserId }),
+      });
+      const data = await res.json();
+      if (data.email) {
+        setRevealedEmails(prev => ({ ...prev, [targetUserId]: data.email }));
+      }
+    } catch {
+      // fail silently
+    }
+    setLoadingEmail(null);
+  }
 
   async function handleDeleteUser(targetUser) {
     if (!window.confirm(`Remove "${targetUser.display_name || targetUser.username || 'this user'}" from the community? This cannot be undone.`)) return;
@@ -313,11 +334,23 @@ export default function AdminDashboard({
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-ink-800 text-sm">{user.display_name || 'No name'}</p>
                   {user.username && <p className="text-xs text-ink-400">@{user.username}</p>}
+                  {revealedEmails[user.id] && (
+                    <p className="text-xs text-clay-500 mt-0.5 font-mono">{revealedEmails[user.id]}</p>
+                  )}
                 </div>
                 {user.is_crew && (
-                  <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-clay-500/20 text-clay-500 border border-clay-500/30">
+                  <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-clay-500/20 text-clay-500 border border-clay-500/30 shrink-0">
                     Crew
                   </span>
+                )}
+                {!revealedEmails[user.id] && (
+                  <button
+                    onClick={() => handleRevealEmail(user.id)}
+                    disabled={loadingEmail === user.id}
+                    className="text-xs text-ink-400 hover:text-clay-500 transition px-2 py-1 rounded hover:bg-cream-200 disabled:opacity-40 shrink-0"
+                  >
+                    {loadingEmail === user.id ? '…' : 'Email'}
+                  </button>
                 )}
                 {user.id !== userId && (
                   <button
