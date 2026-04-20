@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 
 export default async function HomePage() {
@@ -141,9 +142,18 @@ export default async function HomePage() {
           🔥 Hot Take of the Week
         </p>
         <div className="w-10 h-0.5 bg-clay-500 mb-4" />
-        <h2 className="font-display text-[clamp(32px,5vw,52px)] leading-[0.95] text-ink-800 mb-6">
-          Hot Take of the Week
-        </h2>
+        <div className="flex items-center justify-between gap-4 mb-6">
+          <h2 className="font-display text-[clamp(32px,5vw,52px)] leading-[0.95] text-ink-800">
+            Hot Take of the Week
+          </h2>
+          <Image
+            src="/logo-tgc.png"
+            alt="The Good Company"
+            width={120}
+            height={60}
+            className="h-14 w-auto opacity-80 shrink-0"
+          />
+        </div>
 
         {hotTakeWinner ? (
           <Link

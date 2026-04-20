@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 import SignOutButton from './SignOutButton';
+import MobileMenu from './MobileMenu';
 
 export default async function Nav() {
   const supabase = createClient();
@@ -23,47 +24,33 @@ export default async function Nav() {
     <header className="w-full border-b-2 border-clay-500 bg-cream-50/95 backdrop-blur sticky top-0 z-10">
       <nav className="mx-auto max-w-5xl flex items-center justify-between px-6 h-16">
 
-        {/* Logos */}
-        <Link href="/" className="flex items-center gap-4">
+        {/* Logo */}
+        <Link href="/" className="flex items-center">
           <Image
             src="/logo-tmao.png"
             alt="The Mics Are Open"
-            width={220}
-            height={50}
-            className="h-11 w-auto"
+            width={260}
+            height={60}
+            className="h-12 w-auto"
             priority
-          />
-          <span className="w-px h-6 bg-cream-200 hidden sm:block" />
-          <Image
-            src="/logo-tgc.png"
-            alt="The Good Company"
-            width={80}
-            height={40}
-            className="h-7 w-auto opacity-70 hover:opacity-100 transition hidden sm:block"
           />
         </Link>
 
-        {/* Nav links */}
-        <div className="flex items-center gap-1">
+        {/* Desktop nav links */}
+        <div className="hidden sm:flex items-center gap-1">
           <Link href="/about" className="btn-nav">About</Link>
           <Link href="/open-mic" className="btn-nav">Open Mic</Link>
           <Link href="/threads" className="btn-nav">Threads</Link>
           <Link href="/listen" className="btn-nav">Listen</Link>
 
-          {/* Divider before auth actions */}
           <span className="w-px h-5 bg-cream-200 mx-2" />
 
           {user ? (
             <>
               {profile?.is_crew && (
-                <Link
-                  href="/admin"
-                  className="btn-ghost text-sm py-2 px-4 text-clay-500 border-clay-500/30"
-                >
-                  Admin
-                </Link>
+                <Link href="/admin" className="btn-nav">Admin</Link>
               )}
-              <Link href="/me" className="btn-ghost text-sm py-2 px-4">
+              <Link href="/me" className="btn-nav">
                 {profile?.display_name || 'My Profile'}
               </Link>
               <SignOutButton />
@@ -75,6 +62,9 @@ export default async function Nav() {
             </>
           )}
         </div>
+
+        {/* Mobile hamburger */}
+        <MobileMenu user={user} profile={profile} />
       </nav>
     </header>
   );
