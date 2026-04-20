@@ -32,7 +32,7 @@ export default function MobileMenu({ user, profile }) {
 
       {/* Dropdown */}
       {open && (
-        <div className="fixed top-16 left-0 right-0 bg-cream-50 border-b-2 border-clay-500 z-50 px-6 py-4 flex flex-col gap-2">
+        <div className="fixed top-24 left-0 right-0 bg-cream-50 border-b-2 border-clay-500 z-50 px-6 py-4 flex flex-col gap-2">
           <Link href="/about" onClick={() => setOpen(false)} className="btn-nav justify-center py-3">About</Link>
           <Link href="/open-mic" onClick={() => setOpen(false)} className="btn-nav justify-center py-3">Open Mic</Link>
           <Link href="/threads" onClick={() => setOpen(false)} className="btn-nav justify-center py-3">Threads</Link>

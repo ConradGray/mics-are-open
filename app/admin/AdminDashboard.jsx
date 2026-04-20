@@ -140,6 +140,12 @@ export default function AdminDashboard({
 
       {/* Header */}
       <div className="mb-8">
+        <a
+          href="/"
+          className="inline-flex items-center gap-1 text-sm text-ink-400 hover:text-clay-500 transition mb-4"
+        >
+          ← Back to site
+        </a>
         <p className="uppercase tracking-[0.25em] text-[9px] font-bold text-clay-500 mb-2 flex items-center gap-2">
           <span className="inline-block w-6 h-px bg-clay-500" />
           Crew only
