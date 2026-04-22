@@ -154,6 +154,42 @@ export default function AdminDashboard({
     setThreads(ts => ts.map(t => t.id === threadId ? { ...t, ...updates } : t));
   }
 
+  // ── Hot Take winner picker ─────────────────────────────
+  const [pickingWinner, setPickingWinner] = useState(null);
+  const [pickSearch, setPickSearch] = useState('');
+  const [showPicker, setShowPicker] = useState(false);
+
+  async function handlePickWinner(postId) {
+    setPickingWinner(postId);
+    try {
+      // Clear any existing winner
+      await supabase.from('tmao_posts')
+        .update({ is_hot_take_winner: false })
+        .eq('is_hot_take_winner', true);
+      // Mark selected post as hot take + winner
+      const { error } = await supabase.from('tmao_posts')
+        .update({ is_hot_take: true, is_hot_take_winner: true })
+        .eq('id', postId);
+      if (error) { alert('Error: ' + error.message); return; }
+
+      // Update local state
+      const post = approved.find(p => p.id === postId);
+      setHotTakes(ps => [
+        { ...(post || ps.find(x => x.id === postId)), is_hot_take: true, is_hot_take_winner: true },
+        ...ps.filter(x => x.id !== postId).map(x => ({ ...x, is_hot_take_winner: false })),
+      ]);
+      setApproved(ps => ps.map(x => ({
+        ...x,
+        is_hot_take: x.id === postId ? true : x.is_hot_take,
+        is_hot_take_winner: x.id === postId,
+      })));
+      setShowPicker(false);
+      setPickSearch('');
+    } finally {
+      setPickingWinner(null);
+    }
+  }
+
   // ── Derived ────────────────────────────────────────────
   const winner = hotTakes.find(p => p.is_hot_take_winner);
   const lists = { pending, approved, rejected };
@@ -333,9 +369,86 @@ export default function AdminDashboard({
             </div>
           ) : !winner ? (
             <div className="card text-center py-16 text-ink-400">
-              <p className="text-sm">No hot takes yet. Mark posts from the Queue tab.</p>
+              <p className="text-sm">No hot takes yet. Mark posts from the Queue tab or pick any approved post below.</p>
             </div>
           ) : null}
+
+          {/* ── Pick winner from any approved post ── */}
+          <div className="mt-8">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs font-bold uppercase tracking-widest text-ink-400">
+                Pick winner from any approved post
+              </p>
+              <button
+                onClick={() => { setShowPicker(v => !v); setPickSearch(''); }}
+                className="text-xs font-medium px-3 py-1.5 rounded-lg border border-cream-200 text-ink-500 hover:text-ink-800 hover:bg-cream-100 transition"
+              >
+                {showPicker ? 'Hide' : 'Browse all posts'}
+              </button>
+            </div>
+
+            {showPicker && (
+              <div>
+                <input
+                  type="text"
+                  placeholder="Search posts…"
+                  value={pickSearch}
+                  onChange={e => setPickSearch(e.target.value)}
+                  className="w-full px-3 py-2 text-sm rounded-lg border border-cream-200 bg-cream-50 text-ink-700 placeholder:text-ink-300 focus:outline-none focus:border-clay-500/50 mb-3"
+                />
+                <div className="space-y-2 max-h-[520px] overflow-y-auto pr-1">
+                  {approved
+                    .filter(p => !pickSearch || p.body.toLowerCase().includes(pickSearch.toLowerCase()) ||
+                      (p.tmao_profiles?.display_name || '').toLowerCase().includes(pickSearch.toLowerCase()))
+                    .map(post => {
+                      const profile = post.tmao_profiles;
+                      const isCurrentWinner = winner?.id === post.id;
+                      const isHotTake = post.is_hot_take;
+                      return (
+                        <div
+                          key={post.id}
+                          className={`card flex items-start gap-3 py-3 ${isCurrentWinner ? 'border border-clay-500/50' : ''}`}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1 flex-wrap">
+                              <span className="text-xs font-semibold text-ink-700">
+                                {profile?.display_name || 'Listener'}
+                              </span>
+                              {profile?.username && (
+                                <span className="text-xs text-ink-400">@{profile.username}</span>
+                              )}
+                              {isHotTake && (
+                                <span className="text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-full bg-clay-500/20 text-clay-500 border border-clay-500/30">
+                                  🔥 Hot Take
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-ink-600 leading-relaxed line-clamp-3 whitespace-pre-wrap break-words">
+                              {post.body}
+                            </p>
+                          </div>
+                          {isCurrentWinner ? (
+                            <span className="text-xs font-bold text-clay-500 shrink-0 pt-1">👑 Winner</span>
+                          ) : (
+                            <button
+                              onClick={() => handlePickWinner(post.id)}
+                              disabled={!!pickingWinner}
+                              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-clay-500/20 text-clay-500 border border-clay-500/40 hover:bg-clay-500 hover:text-[#0D0D0D] transition disabled:opacity-40 shrink-0"
+                            >
+                              {pickingWinner === post.id ? 'Setting…' : '👑 Pick as Winner'}
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  {approved.filter(p => !pickSearch || p.body.toLowerCase().includes(pickSearch.toLowerCase()) ||
+                    (p.tmao_profiles?.display_name || '').toLowerCase().includes(pickSearch.toLowerCase())).length === 0 && (
+                    <p className="text-sm text-ink-400 text-center py-8">No posts match your search.</p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
