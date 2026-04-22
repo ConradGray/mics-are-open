@@ -6,98 +6,37 @@ import Image from 'next/image';
 import ThreadReplyComposer from './ThreadReplyComposer';
 import ThreadReactionBar from './ThreadReactionBar';
 
-// Group flat replies into a tree based on leading @mention.
-// A reply that starts with @username is nested under the most recent
-// reply written by that user (if one exists before it).
-function buildThreadGroups(replies) {
-  const groups = [];       // { reply, children: Reply[] }[]
-  const byId = {};         // reply.id → group ref
-  const latestByUser = {}; // username (lower) → reply.id
+/**
+ * Group flat replies into { reply, children[] } where a reply whose body
+ * starts with @username is nested under the most recent reply written by
+ * that user (matching Open Mic's reply-preview-inside-parent-card pattern).
+ */
+function buildGroups(replies) {
+  const groups = [];
+  const byId = {};
+  const latestByUser = {}; // lowercase username → reply.id
 
   for (const reply of replies) {
-    const authorUsername = reply.tmao_profiles?.username?.toLowerCase();
+    const authorUser = reply.tmao_profiles?.username?.toLowerCase();
     const mentionMatch = reply.body.match(/^@([\w.]+)/);
     const mentionedUser = mentionMatch?.[1]?.toLowerCase();
-
     const parentId = mentionedUser ? (latestByUser[mentionedUser] ?? null) : null;
 
     if (parentId && byId[parentId]) {
+      // Add to the root group that owns the parent
       byId[parentId].children.push(reply);
+      // Point this reply's id to the same root group so its children land here too
+      byId[reply.id] = byId[parentId];
     } else {
       const g = { reply, children: [] };
       groups.push(g);
       byId[reply.id] = g;
     }
 
-    if (authorUsername) {
-      latestByUser[authorUsername] = reply.id;
-    }
+    if (authorUser) latestByUser[authorUser] = reply.id;
   }
 
   return groups;
-}
-
-function ReplyCard({ reply, reactionsByReply, currentUserId, userId, isNested, isReplying, onReplyTo }) {
-  const profile = reply.tmao_profiles;
-  const reactions = reactionsByReply[reply.id] || [];
-  const ago = timeAgo(reply.created_at);
-
-  return (
-    <div className={`card py-4 px-5${isNested ? ' border-l-2 border-clay-300' : ''}`}>
-      <div className="flex items-start gap-3">
-        <Link
-          href={profile?.username ? `/u/${profile.username}` : '#'}
-          className="relative w-8 h-8 rounded-full bg-cream-200 overflow-hidden flex items-center justify-center shrink-0"
-        >
-          {profile?.avatar_url ? (
-            <Image
-              src={profile.avatar_url}
-              alt=""
-              fill
-              sizes="32px"
-              className="object-cover"
-            />
-          ) : (
-            <span className="font-display text-xs text-clay-500">
-              {(profile?.display_name || '?').slice(0, 1).toUpperCase()}
-            </span>
-          )}
-        </Link>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-baseline gap-2">
-            <Link
-              href={profile?.username ? `/u/${profile.username}` : '#'}
-              className="font-semibold text-ink-800 text-sm hover:text-clay-500 transition"
-            >
-              {profile?.display_name || 'Listener'}
-            </Link>
-            <span className="text-ink-400 text-xs">{ago}</span>
-          </div>
-          <p className="mt-1 text-ink-600 text-sm leading-relaxed whitespace-pre-wrap break-words">
-            {reply.body}
-          </p>
-          <div className="mt-2 flex items-center gap-3">
-            <ThreadReactionBar
-              threadReplyId={reply.id}
-              reactions={reactions}
-              currentUserId={currentUserId}
-            />
-            {userId && profile?.username && (
-              <button
-                onClick={() => onReplyTo(reply.id, profile.username)}
-                className={`text-xs transition ml-auto ${
-                  isReplying ? 'text-clay-500' : 'text-ink-400 hover:text-clay-500'
-                }`}
-              >
-                {isReplying ? 'Cancel' : 'Reply'}
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 }
 
 export default function ThreadRepliesSection({
@@ -126,10 +65,11 @@ export default function ThreadRepliesSection({
     setActiveReplyTo('');
   }
 
-  const groups = buildThreadGroups(replies || []);
+  const groups = buildGroups(replies || []);
 
   return (
     <div>
+      {/* Composer for new top-level replies */}
       {userId ? (
         <ThreadReplyComposer
           threadId={threadId}
@@ -154,60 +94,138 @@ export default function ThreadRepliesSection({
       {groups.length > 0 ? (
         <div className="space-y-3">
           {groups.map(({ reply, children }) => {
-            const rootReplying = activeReplyId === reply.id;
+            const profile = reply.tmao_profiles;
+            const reactions = reactionsByReply[reply.id] || [];
+            const ago = timeAgo(reply.created_at);
+            const isActive = activeReplyId === reply.id ||
+              children.some(c => activeReplyId === c.id);
+
             return (
               <div key={reply.id}>
-                <ReplyCard
-                  reply={reply}
-                  reactionsByReply={reactionsByReply}
-                  currentUserId={currentUserId}
-                  userId={userId}
-                  isNested={false}
-                  isReplying={rootReplying}
-                  onReplyTo={handleReplyTo}
-                />
+                {/* Parent reply card — mirrors Open Mic PostCard structure */}
+                <div className="card py-4 px-5">
+                  <div className="flex items-start gap-3">
+                    {/* Avatar */}
+                    <Link
+                      href={profile?.username ? `/u/${profile.username}` : '#'}
+                      className="relative w-8 h-8 rounded-full bg-cream-200 overflow-hidden flex items-center justify-center shrink-0"
+                    >
+                      {profile?.avatar_url ? (
+                        <Image src={profile.avatar_url} alt="" fill sizes="32px" className="object-cover" />
+                      ) : (
+                        <span className="font-display text-xs text-clay-500">
+                          {(profile?.display_name || '?').slice(0, 1).toUpperCase()}
+                        </span>
+                      )}
+                    </Link>
 
-                {/* children nested under this reply */}
-                {(children.length > 0 || rootReplying) && (
-                  <div className="mt-2 ml-11 space-y-2">
-                    {children.map((child) => {
-                      const childReplying = activeReplyId === child.id;
-                      return (
-                        <div key={child.id}>
-                          <ReplyCard
-                            reply={child}
-                            reactionsByReply={reactionsByReply}
-                            currentUserId={currentUserId}
-                            userId={userId}
-                            isNested
-                            isReplying={childReplying}
-                            onReplyTo={handleReplyTo}
-                          />
-                          {childReplying && userId && (
-                            <div className="mt-2">
-                              <ThreadReplyComposer
-                                ref={inlineRef}
-                                threadId={threadId}
-                                userId={userId}
-                                replyTo={activeReplyTo}
-                                onClear={handleClear}
-                              />
+                    <div className="flex-1 min-w-0">
+                      {/* Name + time */}
+                      <div className="flex items-baseline gap-2">
+                        <Link
+                          href={profile?.username ? `/u/${profile.username}` : '#'}
+                          className="font-semibold text-ink-800 text-sm hover:text-clay-500 transition"
+                        >
+                          {profile?.display_name || 'Listener'}
+                        </Link>
+                        <span className="text-ink-400 text-xs">{ago}</span>
+                      </div>
+
+                      {/* Body */}
+                      <p className="mt-1 text-ink-600 text-sm leading-relaxed whitespace-pre-wrap break-words">
+                        {reply.body}
+                      </p>
+
+                      {/* Reactions + Reply button */}
+                      <div className="mt-2 flex items-center gap-3">
+                        <ThreadReactionBar
+                          threadReplyId={reply.id}
+                          reactions={reactions}
+                          currentUserId={currentUserId}
+                        />
+                        {userId && profile?.username && (
+                          <button
+                            onClick={() => handleReplyTo(reply.id, profile.username)}
+                            className={`text-xs transition ml-auto ${
+                              activeReplyId === reply.id ? 'text-clay-500' : 'text-ink-400 hover:text-clay-500'
+                            }`}
+                          >
+                            {activeReplyId === reply.id ? 'Cancel' : 'Reply'}
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Nested children — same style as Open Mic first-reply preview */}
+                      {children.map((child) => {
+                        const cp = child.tmao_profiles;
+                        const cr = reactionsByReply[child.id] || [];
+                        const cAgo = timeAgo(child.created_at);
+                        return (
+                          <div key={child.id} className="mt-3 pt-3 border-t border-cream-200">
+                            <div className="flex items-start gap-2">
+                              {/* Smaller avatar — matches Open Mic nested preview */}
+                              <Link
+                                href={cp?.username ? `/u/${cp.username}` : '#'}
+                                className="relative w-6 h-6 rounded-full bg-cream-200 overflow-hidden flex items-center justify-center shrink-0 mt-0.5"
+                              >
+                                {cp?.avatar_url ? (
+                                  <Image src={cp.avatar_url} alt="" fill sizes="24px" className="object-cover" />
+                                ) : (
+                                  <span className="font-display text-[10px] text-clay-500">
+                                    {(cp?.display_name || '?').slice(0, 1).toUpperCase()}
+                                  </span>
+                                )}
+                              </Link>
+
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-baseline gap-2">
+                                  <Link
+                                    href={cp?.username ? `/u/${cp.username}` : '#'}
+                                    className="text-xs font-semibold text-ink-600 hover:text-clay-500 transition"
+                                  >
+                                    {cp?.display_name || 'Listener'}
+                                  </Link>
+                                  <span className="text-ink-400 text-xs">{cAgo}</span>
+                                </div>
+                                <p className="text-xs text-ink-500 leading-relaxed mt-0.5 whitespace-pre-wrap break-words">
+                                  {child.body}
+                                </p>
+                                <div className="mt-1.5 flex items-center gap-3">
+                                  <ThreadReactionBar
+                                    threadReplyId={child.id}
+                                    reactions={cr}
+                                    currentUserId={currentUserId}
+                                  />
+                                  {userId && cp?.username && (
+                                    <button
+                                      onClick={() => handleReplyTo(child.id, cp.username)}
+                                      className={`text-xs transition ml-auto ${
+                                        activeReplyId === child.id ? 'text-clay-500' : 'text-ink-400 hover:text-clay-500'
+                                      }`}
+                                    >
+                                      {activeReplyId === child.id ? 'Cancel' : 'Reply'}
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                          )}
-                        </div>
-                      );
-                    })}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
 
-                    {/* inline composer for root reply */}
-                    {rootReplying && userId && (
-                      <ThreadReplyComposer
-                        ref={inlineRef}
-                        threadId={threadId}
-                        userId={userId}
-                        replyTo={activeReplyTo}
-                        onClear={handleClear}
-                      />
-                    )}
+                {/* Inline composer — appears below the whole group when Reply is clicked */}
+                {isActive && userId && (
+                  <div className="mt-2">
+                    <ThreadReplyComposer
+                      ref={inlineRef}
+                      threadId={threadId}
+                      userId={userId}
+                      replyTo={activeReplyTo}
+                      onClear={handleClear}
+                    />
                   </div>
                 )}
               </div>
@@ -233,8 +251,5 @@ function timeAgo(dateStr) {
   if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h`;
   if (diffSec < 2592000) return `${Math.floor(diffSec / 86400)}d`;
 
-  return new Date(dateStr).toLocaleDateString(undefined, {
-    month: 'short',
-    day: 'numeric',
-  });
+  return new Date(dateStr).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
