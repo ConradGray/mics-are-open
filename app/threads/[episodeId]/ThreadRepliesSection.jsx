@@ -9,26 +9,37 @@ import ThreadReactionBar from './ThreadReactionBar';
 export default function ThreadRepliesSection({
   threadId, userId, replies, reactionsByReply, currentUserId,
 }) {
-  const [replyTo, setReplyTo] = useState('');
-  const composerRef = useRef(null);
+  const [activeReplyId, setActiveReplyId] = useState(null);
+  const [activeReplyTo, setActiveReplyTo] = useState('');
+  const inlineRef = useRef(null);
 
-  function handleReplyTo(username) {
-    setReplyTo(`@${username} `);
+  function handleReplyTo(replyId, username) {
+    if (activeReplyId === replyId) {
+      setActiveReplyId(null);
+      setActiveReplyTo('');
+      return;
+    }
+    setActiveReplyId(replyId);
+    setActiveReplyTo(`@${username} `);
     setTimeout(() => {
-      composerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      composerRef.current?.focus();
+      inlineRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      inlineRef.current?.focus();
     }, 50);
+  }
+
+  function handleClear() {
+    setActiveReplyId(null);
+    setActiveReplyTo('');
   }
 
   return (
     <div>
       {userId ? (
         <ThreadReplyComposer
-          ref={composerRef}
           threadId={threadId}
           userId={userId}
-          replyTo={replyTo}
-          onClear={() => setReplyTo('')}
+          replyTo=""
+          onClear={() => {}}
         />
       ) : (
         <div className="card text-center mb-4">
@@ -50,59 +61,78 @@ export default function ThreadRepliesSection({
             const profile = reply.tmao_profiles;
             const reactions = reactionsByReply[reply.id] || [];
             const ago = timeAgo(reply.created_at);
+            const isReplying = activeReplyId === reply.id;
 
             return (
-              <div key={reply.id} className="card py-4 px-5">
-                <div className="flex items-start gap-3">
-                  <Link
-                    href={profile?.username ? `/u/${profile.username}` : '#'}
-                    className="relative w-8 h-8 rounded-full bg-cream-200 overflow-hidden flex items-center justify-center shrink-0"
-                  >
-                    {profile?.avatar_url ? (
-                      <Image
-                        src={profile.avatar_url}
-                        alt=""
-                        fill
-                        sizes="32px"
-                        className="object-cover"
-                      />
-                    ) : (
-                      <span className="font-display text-xs text-clay-500">
-                        {(profile?.display_name || '?').slice(0, 1).toUpperCase()}
-                      </span>
-                    )}
-                  </Link>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-baseline gap-2">
-                      <Link
-                        href={profile?.username ? `/u/${profile.username}` : '#'}
-                        className="font-semibold text-ink-800 text-sm hover:text-clay-500 transition"
-                      >
-                        {profile?.display_name || 'Listener'}
-                      </Link>
-                      <span className="text-ink-400 text-xs">{ago}</span>
-                    </div>
-                    <p className="mt-1 text-ink-600 text-sm leading-relaxed whitespace-pre-wrap break-words">
-                      {reply.body}
-                    </p>
-                    <div className="mt-2 flex items-center gap-3">
-                      <ThreadReactionBar
-                        threadReplyId={reply.id}
-                        reactions={reactions}
-                        currentUserId={currentUserId}
-                      />
-                      {userId && profile?.username && (
-                        <button
-                          onClick={() => handleReplyTo(profile.username)}
-                          className="text-xs text-ink-400 hover:text-clay-500 transition ml-auto"
-                        >
-                          Reply
-                        </button>
+              <div key={reply.id}>
+                <div className="card py-4 px-5">
+                  <div className="flex items-start gap-3">
+                    <Link
+                      href={profile?.username ? `/u/${profile.username}` : '#'}
+                      className="relative w-8 h-8 rounded-full bg-cream-200 overflow-hidden flex items-center justify-center shrink-0"
+                    >
+                      {profile?.avatar_url ? (
+                        <Image
+                          src={profile.avatar_url}
+                          alt=""
+                          fill
+                          sizes="32px"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <span className="font-display text-xs text-clay-500">
+                          {(profile?.display_name || '?').slice(0, 1).toUpperCase()}
+                        </span>
                       )}
+                    </Link>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline gap-2">
+                        <Link
+                          href={profile?.username ? `/u/${profile.username}` : '#'}
+                          className="font-semibold text-ink-800 text-sm hover:text-clay-500 transition"
+                        >
+                          {profile?.display_name || 'Listener'}
+                        </Link>
+                        <span className="text-ink-400 text-xs">{ago}</span>
+                      </div>
+                      <p className="mt-1 text-ink-600 text-sm leading-relaxed whitespace-pre-wrap break-words">
+                        {reply.body}
+                      </p>
+                      <div className="mt-2 flex items-center gap-3">
+                        <ThreadReactionBar
+                          threadReplyId={reply.id}
+                          reactions={reactions}
+                          currentUserId={currentUserId}
+                        />
+                        {userId && profile?.username && (
+                          <button
+                            onClick={() => handleReplyTo(reply.id, profile.username)}
+                            className={`text-xs transition ml-auto ${
+                              isReplying
+                                ? 'text-clay-500'
+                                : 'text-ink-400 hover:text-clay-500'
+                            }`}
+                          >
+                            {isReplying ? 'Cancel' : 'Reply'}
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
+
+                {isReplying && userId && (
+                  <div className="mt-2 ml-11">
+                    <ThreadReplyComposer
+                      ref={inlineRef}
+                      threadId={threadId}
+                      userId={userId}
+                      replyTo={activeReplyTo}
+                      onClear={handleClear}
+                    />
+                  </div>
+                )}
               </div>
             );
           })}
