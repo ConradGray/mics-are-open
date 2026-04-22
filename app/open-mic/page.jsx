@@ -16,6 +16,16 @@ export default async function WallPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  let isCrew = false;
+  if (user) {
+    const { data: profile } = await supabase
+      .from('tmao_profiles')
+      .select('is_crew')
+      .eq('id', user.id)
+      .maybeSingle();
+    isCrew = profile?.is_crew || false;
+  }
+
   // Fetch approved posts with author profile, reactions, and replies (with author info for first reply preview)
   const { data: posts } = await supabase
     .from('tmao_posts')
@@ -117,7 +127,7 @@ export default async function WallPage() {
               Your pending posts
             </p>
             {pendingPosts.map((post) => (
-              <PostCard key={post.id} post={post} currentUserId={user?.id} isPending />
+              <PostCard key={post.id} post={post} currentUserId={user?.id} isCrew={isCrew} isPending />
             ))}
           </div>
         )}
@@ -125,7 +135,7 @@ export default async function WallPage() {
         <div className="space-y-4">
           {posts && posts.length > 0 ? (
             posts.map((post) => (
-              <PostCard key={post.id} post={post} currentUserId={user?.id} />
+              <PostCard key={post.id} post={post} currentUserId={user?.id} isCrew={isCrew} />
             ))
           ) : (
             <div className="card text-center text-ink-400">

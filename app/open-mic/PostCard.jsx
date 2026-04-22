@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import ReactionBar from './ReactionBar';
+import DeletePostButton from './DeletePostButton';
 
-export default function PostCard({ post, currentUserId, isPending = false }) {
+export default function PostCard({ post, currentUserId, isCrew = false, isPending = false }) {
   const profile = post.tmao_profiles;
   const replies = post.tmao_replies || [];
   const replyCount = replies.length;
@@ -69,16 +70,19 @@ export default function PostCard({ post, currentUserId, isPending = false }) {
                 currentUserId={currentUserId}
               />
 
-              <Link
-                href={`/open-mic/${post.id}`}
-                className="text-xs text-ink-400 hover:text-clay-500 transition ml-auto"
-              >
-                {replyCount > 1
-                  ? `${replyCount - 1} more ${replyCount - 1 === 1 ? 'reply' : 'replies'}`
-                  : replyCount === 0
-                  ? 'Reply'
-                  : null}
-              </Link>
+              <div className="ml-auto flex items-center gap-3">
+                <Link
+                  href={`/open-mic/${post.id}`}
+                  className="text-xs text-ink-400 hover:text-clay-500 transition"
+                >
+                  {replyCount > 1
+                    ? `${replyCount - 1} more ${replyCount - 1 === 1 ? 'reply' : 'replies'}`
+                    : replyCount === 0
+                    ? 'Reply'
+                    : null}
+                </Link>
+                {isCrew && <DeletePostButton postId={post.id} />}
+              </div>
             </div>
           )}
 

@@ -45,6 +45,16 @@ export default async function ThreadDetailPage({ params }) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  let isCrew = false;
+  if (user) {
+    const { data: profile } = await supabase
+      .from('tmao_profiles')
+      .select('is_crew')
+      .eq('id', user.id)
+      .maybeSingle();
+    isCrew = profile?.is_crew || false;
+  }
+
   // Fetch reactions for all replies separately (more reliable than nested select)
   const replyIds = (replies || []).map((r) => r.id);
   const { data: allReactions } = replyIds.length > 0
@@ -155,6 +165,7 @@ export default async function ThreadDetailPage({ params }) {
           replies={replies || []}
           reactionsByReply={reactionsByReply}
           currentUserId={user?.id || null}
+          isCrew={isCrew}
         />
       </div>
     </div>

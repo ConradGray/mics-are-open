@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useTransition, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { createClient } from '@/lib/supabase/client';
 import ThreadReplyComposer from './ThreadReplyComposer';
 import ThreadReactionBar from './ThreadReactionBar';
 
@@ -40,11 +42,23 @@ function buildGroups(replies) {
 }
 
 export default function ThreadRepliesSection({
-  threadId, userId, replies, reactionsByReply, currentUserId,
+  threadId, userId, replies, reactionsByReply, currentUserId, isCrew = false,
 }) {
+  const router = useRouter();
+  const supabase = createClient();
   const [activeReplyId, setActiveReplyId] = useState(null);
   const [activeReplyTo, setActiveReplyTo] = useState('');
+  const [deletingId, setDeletingId] = useState(null);
+  const [, startTransition] = useTransition();
   const inlineRef = useRef(null);
+
+  async function handleDeleteReply(replyId) {
+    if (!window.confirm('Delete this reply permanently?')) return;
+    setDeletingId(replyId);
+    const { error } = await supabase.from('tmao_thread_replies').delete().eq('id', replyId);
+    if (error) { console.error(error); setDeletingId(null); return; }
+    startTransition(() => router.refresh());
+  }
 
   function handleReplyTo(replyId, username) {
     if (activeReplyId === replyId) {
@@ -143,16 +157,27 @@ export default function ThreadRepliesSection({
                           reactions={reactions}
                           currentUserId={currentUserId}
                         />
-                        {userId && profile?.username && (
-                          <button
-                            onClick={() => handleReplyTo(reply.id, profile.username)}
-                            className={`text-xs transition ml-auto ${
-                              activeReplyId === reply.id ? 'text-clay-500' : 'text-ink-400 hover:text-clay-500'
-                            }`}
-                          >
-                            {activeReplyId === reply.id ? 'Cancel' : 'Reply'}
-                          </button>
-                        )}
+                        <div className="ml-auto flex items-center gap-3">
+                          {userId && profile?.username && (
+                            <button
+                              onClick={() => handleReplyTo(reply.id, profile.username)}
+                              className={`text-xs transition ${
+                                activeReplyId === reply.id ? 'text-clay-500' : 'text-ink-400 hover:text-clay-500'
+                              }`}
+                            >
+                              {activeReplyId === reply.id ? 'Cancel' : 'Reply'}
+                            </button>
+                          )}
+                          {isCrew && (
+                            <button
+                              onClick={() => handleDeleteReply(reply.id)}
+                              disabled={deletingId === reply.id}
+                              className="text-xs text-ink-400 hover:text-red-500 transition disabled:opacity-40"
+                            >
+                              {deletingId === reply.id ? 'Deleting…' : 'Delete'}
+                            </button>
+                          )}
+                        </div>
                       </div>
 
                       {/* Nested children — same style as Open Mic first-reply preview */}
@@ -196,16 +221,27 @@ export default function ThreadRepliesSection({
                                     reactions={cr}
                                     currentUserId={currentUserId}
                                   />
-                                  {userId && cp?.username && (
-                                    <button
-                                      onClick={() => handleReplyTo(child.id, cp.username)}
-                                      className={`text-xs transition ml-auto ${
-                                        activeReplyId === child.id ? 'text-clay-500' : 'text-ink-400 hover:text-clay-500'
-                                      }`}
-                                    >
-                                      {activeReplyId === child.id ? 'Cancel' : 'Reply'}
-                                    </button>
-                                  )}
+                                  <div className="ml-auto flex items-center gap-3">
+                                    {userId && cp?.username && (
+                                      <button
+                                        onClick={() => handleReplyTo(child.id, cp.username)}
+                                        className={`text-xs transition ${
+                                          activeReplyId === child.id ? 'text-clay-500' : 'text-ink-400 hover:text-clay-500'
+                                        }`}
+                                      >
+                                        {activeReplyId === child.id ? 'Cancel' : 'Reply'}
+                                      </button>
+                                    )}
+                                    {isCrew && (
+                                      <button
+                                        onClick={() => handleDeleteReply(child.id)}
+                                        disabled={deletingId === child.id}
+                                        className="text-xs text-ink-400 hover:text-red-500 transition disabled:opacity-40"
+                                      >
+                                        {deletingId === child.id ? 'Deleting…' : 'Delete'}
+                                      </button>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                             </div>
