@@ -52,22 +52,22 @@ export default function ThreadRepliesSection({
             const ago = timeAgo(reply.created_at);
 
             return (
-              <div key={reply.id} className="card">
+              <div key={reply.id} className="card py-4 px-5">
                 <div className="flex items-start gap-3">
                   <Link
                     href={profile?.username ? `/u/${profile.username}` : '#'}
-                    className="relative w-9 h-9 rounded-full bg-cream-200 overflow-hidden flex items-center justify-center shrink-0"
+                    className="relative w-8 h-8 rounded-full bg-cream-200 overflow-hidden flex items-center justify-center shrink-0"
                   >
                     {profile?.avatar_url ? (
                       <Image
                         src={profile.avatar_url}
                         alt=""
                         fill
-                        sizes="36px"
+                        sizes="32px"
                         className="object-cover"
                       />
                     ) : (
-                      <span className="font-display text-sm text-clay-500">
+                      <span className="font-display text-xs text-clay-500">
                         {(profile?.display_name || '?').slice(0, 1).toUpperCase()}
                       </span>
                     )}
@@ -81,10 +81,7 @@ export default function ThreadRepliesSection({
                       >
                         {profile?.display_name || 'Listener'}
                       </Link>
-                      {profile?.username && (
-                        <span className="text-ink-400 text-xs">@{profile.username}</span>
-                      )}
-                      <span className="text-ink-400 text-xs ml-auto shrink-0">{ago}</span>
+                      <span className="text-ink-400 text-xs">{ago}</span>
                     </div>
                     <p className="mt-1 text-ink-600 text-sm leading-relaxed whitespace-pre-wrap break-words">
                       {reply.body}
