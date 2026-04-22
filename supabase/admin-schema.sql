@@ -62,6 +62,19 @@ create policy "TMAO crew can delete any reply"
   );
 
 -- -----------------------------------------------------------------
+-- 6. Crew can delete any thread reply (moderation)
+-- -----------------------------------------------------------------
+drop policy if exists "TMAO crew can delete any thread reply" on public.tmao_thread_replies;
+create policy "TMAO crew can delete any thread reply"
+  on public.tmao_thread_replies for delete
+  using (
+    exists (
+      select 1 from public.tmao_profiles
+      where id = auth.uid() and is_crew = true
+    )
+  );
+
+-- -----------------------------------------------------------------
 -- After running this, flag yourself as crew:
 --
 --   update tmao_profiles
