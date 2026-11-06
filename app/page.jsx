@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { fitStyle } from '@/lib/fit';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 import Chip from '@/components/Chip';
@@ -69,7 +70,7 @@ export default async function HomePage() {
           {latest ? (
             <>
               <Chip value={latest.episode_num ? `#${latest.episode_num}` : 'NEW'} label="Every Friday" />
-              <h1 className="display mt-4 text-[clamp(44px,12vw,84px)] lg:text-[clamp(44px,5.4vw,84px)]">
+              <h1 className="display fit mt-4" style={fitStyle(latest.title, 84)}>
                 {latestTitle.lead}<span className="hl">{latestTitle.hl}</span>
               </h1>
               <p className="tmao-label mt-4 text-ink-700">{latestDate}</p>
@@ -86,7 +87,7 @@ export default async function HomePage() {
           ) : (
             <>
               <Chip value="#1" label="Every Friday" />
-              <h1 className="display mt-4 text-[clamp(44px,12vw,84px)] lg:text-[clamp(44px,5.4vw,84px)]">
+              <h1 className="display fit mt-4" style={fitStyle('The Mics Are Open', 84)}>
                 The Mics <span className="hl">Are Open</span>
               </h1>
             </>
