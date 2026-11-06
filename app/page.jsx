@@ -126,6 +126,67 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ── Listener Spotlight ─────────────────────────────
+          Same data as before the redesign: tmao_spotlight (id 1) -> tmao_profiles,
+          set by crew in /admin and rotated by pg_cron. Listener photo from Supabase
+          shown in its own frame — no overlay, no text on the face. */}
+      <section className="bleed pb-[72px] lg:pb-[110px]">
+        <div className="wrap">
+          <p className="section-label">⭐ Listener Spotlight</p>
+          <h2 className="display text-[clamp(34px,8.5vw,72px)] mb-7">Listener <span className="hl">Spotlight</span></h2>
+
+          {spotlight ? (
+            <Link
+              href={`/u/${spotlight.username}`}
+              className="group grid gap-6 md:grid-cols-[260px_1fr] md:items-center bg-[#141416] border border-[#26262A] hover:border-clay-500 transition p-5 md:p-7"
+            >
+              <div className="photo relative w-40 h-40 md:w-[260px] md:h-[260px] bg-[#26262A] flex items-center justify-center">
+                {spotlight.avatar_url ? (
+                  <Image
+                    src={spotlight.avatar_url}
+                    alt={spotlight.display_name || spotlight.username}
+                    fill
+                    sizes="(min-width:768px) 260px, 160px"
+                    className="object-cover"
+                    style={{ objectPosition: '50% 30%' }}
+                  />
+                ) : (
+                  <span className="display text-6xl text-clay-500">
+                    {(spotlight.display_name || spotlight.username || '?').slice(0, 1).toUpperCase()}
+                  </span>
+                )}
+              </div>
+              <div className="min-w-0">
+                <Chip small tone="p" value="⭐" label="This week’s listener" />
+                <p className="display mt-4 text-[clamp(28px,7vw,52px)] break-words">
+                  {spotlight.display_name || spotlight.username}
+                </p>
+                {spotlight.username && (
+                  <p className="tmao-label text-ink-600 mt-2.5 text-[11px] normal-case">@{spotlight.username}</p>
+                )}
+                {spotlight.location && (
+                  <p className="text-ink-500 text-sm mt-2">📍 {spotlight.location}</p>
+                )}
+                {spotlight.bio && (
+                  <p className="mt-4 max-w-[640px] text-ink-700 text-[17px] leading-relaxed">
+                    &ldquo;{spotlight.bio}&rdquo;
+                  </p>
+                )}
+                <span className="inline-block mt-5 tmao-label font-extrabold border-b-2 border-clay-500 pb-1 group-hover:text-clay-500">
+                  View profile →
+                </span>
+              </div>
+            </Link>
+          ) : (
+            <div className="card text-center py-10">
+              <p className="text-2xl mb-3">⭐</p>
+              <p className="text-ink-600 text-sm">No spotlight this week yet.</p>
+              <p className="text-ink-500 text-sm mt-1">Check back soon.</p>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* ── Recent episode threads ──────────────────────── */}
       {previous.length > 0 && (
         <section className="bleed pb-[72px] lg:pb-[110px]">
@@ -168,39 +229,6 @@ export default async function HomePage() {
                   <Link href="/open-mic" className="text-clay-500 hover:underline font-semibold">Open Mic</Link>{' '}
                   — the crew picks every week.
                 </p>
-              </div>
-            )}
-
-            {/* Listener Spotlight */}
-            {spotlight ? (
-              <Link href={`/u/${spotlight.username}`} className="card block hover:border-clay-500 transition group">
-                <Chip small tone="p" value="⭐" label="Listener Spotlight" className="mb-4" />
-                <div className="flex items-center gap-4">
-                  <div className="relative w-16 h-16 rounded-full bg-[#26262A] overflow-hidden flex items-center justify-center shrink-0">
-                    {spotlight.avatar_url ? (
-                      <Image src={spotlight.avatar_url} alt={spotlight.display_name || spotlight.username} fill sizes="64px" className="object-cover" />
-                    ) : (
-                      <span className="display text-2xl text-clay-500">
-                        {(spotlight.display_name || spotlight.username || '?').slice(0, 1).toUpperCase()}
-                      </span>
-                    )}
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="text-[clamp(22px,6vw,30px)]">{spotlight.display_name || spotlight.username}</h3>
-                    {spotlight.username && <p className="tmao-label text-ink-600 mt-1.5 text-[10px]">@{spotlight.username}</p>}
-                  </div>
-                </div>
-                {spotlight.location && <p className="text-ink-500 text-sm mt-3">📍 {spotlight.location}</p>}
-                {spotlight.bio && (
-                  <p className="mt-3 text-ink-700 text-sm leading-relaxed line-clamp-3">&ldquo;{spotlight.bio}&rdquo;</p>
-                )}
-                <span className="inline-block mt-4 tmao-label font-extrabold border-b-2 border-clay-500 pb-1">View profile →</span>
-              </Link>
-            ) : (
-              <div className="card">
-                <Chip small tone="p" value="⭐" label="Listener Spotlight" className="mb-4" />
-                <p className="text-ink-600 text-sm">No spotlight this week yet.</p>
-                <p className="text-ink-500 text-sm mt-1">Check back soon.</p>
               </div>
             )}
 
