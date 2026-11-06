@@ -18,7 +18,7 @@ export default function RootLayout({ children }) {
         </main>
         <footer className="border-t border-[#26262A] pt-8 pb-10">
           <div className="wrap flex flex-col md:flex-row md:items-center md:justify-between gap-5">
-            <a href="/" aria-label="The Mics Are Open — home">
+            <a href="/" aria-label="The Mics Are Open — home" className="shrink-0">
               <Image src="/logo-tmao.png" alt="The Mics Are Open" width={340} height={80} className="h-10 w-auto" />
             </a>
             <nav aria-label="Footer" className="flex flex-wrap gap-x-5 gap-y-3.5">
@@ -40,7 +40,21 @@ export default function RootLayout({ children }) {
                 </a>
               ))}
             </nav>
+          </div>
+          {/* Bottom row: copyright left, "Built by" credit right (stacks on mobile) */}
+          <div className="wrap mt-6">
+           <div className="pt-5 border-t border-[#26262A] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <span className="text-xs tracking-[0.06em] text-ink-400">© 2026 The Good Company</span>
+            <a
+              href="https://desynlab.co.ke"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2.5 self-start sm:self-auto opacity-70 hover:opacity-100 transition"
+            >
+              <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-ink-600">Built by</span>
+              <Image src="/desynlab-wordmark-white.png" alt="Desyn Lab" width={308} height={40} className="h-[15px] w-auto" />
+            </a>
+           </div>
           </div>
         </footer>
       </body>
