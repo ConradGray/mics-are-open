@@ -99,13 +99,13 @@ export default function ListenPage() {
       <section className="bleed pb-[72px] lg:pb-[110px]">
         <div className="wrap">
           <p className="section-label">From the studio</p>
-        </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5">
           {studio.map((name, i) => (
             <div key={name} className={`photo ${i === 0 ? 'col-span-2 aspect-video md:row-span-2 md:aspect-auto' : 'aspect-square'}`}>
               <Image src={`/collage/${name}.jpg`} alt="" fill sizes="(min-width:768px) 33vw, 50vw" className="object-cover" />
             </div>
           ))}
+        </div>
         </div>
       </section>
 

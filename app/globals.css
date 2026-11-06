@@ -155,12 +155,18 @@ h1, h2, h3 {
 .split-hero .photo.portrait { aspect-ratio: 4 / 5; }
 .split-hero .panel { padding: 22px 20px 40px; }
 @media (min-width: 1000px) {
-  .split-hero { grid-template-columns: minmax(0, .95fr) minmax(0, 1.45fr); align-items: center; }
+  /* Desktop: text + photo sit inside the same centred 1240px column (48px gutters)
+     as the rest of the page, so the photo never runs into the page edge. */
+  .split-hero {
+    grid-template-columns: minmax(0, .95fr) minmax(0, 1.45fr);
+    align-items: center;
+    column-gap: 48px;
+    padding: 56px max(48px, calc((100% - 1240px) / 2 + 48px));
+  }
   .split-hero .photo { order: 2; }
   .split-hero .photo.portrait { aspect-ratio: 4 / 3; }
   .split-hero .photo.fade-bottom::after { display: none; }
-  /* line the text up with the centred 1240px content column */
-  .split-hero .panel { order: 1; padding: 40px 40px 40px max(48px, calc((100vw - 1240px) / 2 + 48px)); }
+  .split-hero .panel { order: 1; padding: 0; }
 }
 
 /* ── Shared component classes ───────────────────────────── */

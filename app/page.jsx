@@ -212,19 +212,18 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Studio strip (photos in their own frames, chip below) ── */}
-      <section className="bleed grid md:grid-cols-[1.4fr_1fr] gap-1.5">
-        <figure className="bg-[#0A0A0B]">
-          <div className="photo aspect-video">
-            <Image src="/collage/c3.jpg" alt="Studio session" fill sizes="(min-width:768px) 58vw, 100vw" className="object-cover" />
+      {/* ── Studio strip: two photos at the same size inside the content column ── */}
+      <section className="bleed pb-[72px] lg:pb-[110px]">
+        <div className="wrap">
+          <div className="grid md:grid-cols-2 gap-1.5">
+            {['/collage/c3.jpg', '/collage/c5.jpg'].map((src) => (
+              <figure key={src} className="photo aspect-video">
+                <Image src={src} alt="Studio session" fill sizes="(min-width:1240px) 600px, (min-width:768px) 50vw, 100vw" className="object-cover" style={{ objectPosition: '50% 35%' }} />
+              </figure>
+            ))}
           </div>
-          <figcaption className="p-3"><Chip small value="Fri" label="Every Friday" /></figcaption>
-        </figure>
-        <figure className="bg-[#0A0A0B]">
-          <div className="photo aspect-video">
-            <Image src="/collage/c5.jpg" alt="Studio session" fill sizes="(min-width:768px) 42vw, 100vw" className="object-cover" />
-          </div>
-        </figure>
+          <div className="pt-3"><Chip small value="Fri" label="Every Friday" /></div>
+        </div>
       </section>
 
       <CommunityCta />

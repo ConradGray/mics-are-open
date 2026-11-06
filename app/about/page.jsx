@@ -101,17 +101,19 @@ export default function AboutPage() {
       {/* Photo strip — two photos at the same size (equal columns, 16:9, cover),
           in their own frames with nothing on top; the chip sits on a solid bar below */}
       <section className="bleed">
+        <div className="wrap">
         <div className="grid md:grid-cols-2 gap-1.5">
           {[
             { src: '/collage/c6.jpg', alt: 'The hosts mid-conversation in the studio' },
             { src: '/collage/kodong.jpg', alt: 'The Mics Are Open with Kodong Klan in the studio' },
           ].map((img) => (
             <figure key={img.src} className="photo aspect-video">
-              <Image src={img.src} alt={img.alt} fill sizes="(min-width:768px) 50vw, 100vw" className="object-cover" style={{ objectPosition: '50% 35%' }} />
+              <Image src={img.src} alt={img.alt} fill sizes="(min-width:1240px) 600px, (min-width:768px) 50vw, 100vw" className="object-cover" style={{ objectPosition: '50% 35%' }} />
             </figure>
           ))}
         </div>
-        <div className="bg-[#0A0A0B] p-3"><Chip small value="Fri" label="Every Friday" /></div>
+        <div className="pt-3"><Chip small value="Fri" label="Every Friday" /></div>
+        </div>
       </section>
 
       {/* Following + stats */}
