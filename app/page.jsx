@@ -1,6 +1,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
+import Chip from '@/components/Chip';
+import EpisodeCard from '@/components/EpisodeCard';
+import CommunityCta from '@/components/CommunityCta';
+import { splitHighlight } from '@/lib/episodes';
 
 export default async function HomePage() {
   const supabase = createClient();
@@ -34,311 +38,206 @@ export default async function HomePage() {
     spotlight = sp;
   }
 
+  // Latest episode threads for the "This Week" hero + recent row.
+  // Read-only; same table and columns the /threads/all page already selects.
+  const { data: recentThreads } = await supabase
+    .from('tmao_threads')
+    .select('id, episode_num, title, description, embed_url, published_at, tmao_thread_replies ( id )')
+    .order('published_at', { ascending: false })
+    .limit(4);
+
+  const latest = recentThreads?.[0] || null;
+  const previous = (recentThreads || []).slice(1, 4);
+  const latestTitle = latest ? splitHighlight(latest.title) : null;
+  const latestDate = latest
+    ? new Date(latest.published_at).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+    : null;
+
   return (
-    <div className="flex flex-col">
+    <div className="page-full flex flex-col">
 
-      {/* ── Hero ────────────────────────────────────────── */}
-      <div className="pt-12 pb-16 md:pt-20 md:pb-24 grid md:grid-cols-2 md:gap-8 items-center">
+      {/* ── This Week — thumbnail-style panel for the latest episode ──
+          Faces rule: the photo sits in its own frame with no overlay;
+          all text lives on the solid black panel. */}
+      <section className="bleed split-hero">
+        <div className="photo fade-bottom">
+          <Image src="/collage/c1.jpg" alt="The Mics Are Open hosts in the studio" fill priority sizes="(min-width:1000px) 60vw, 100vw" className="object-cover" style={{ objectPosition: '50% 40%' }} />
+        </div>
+        <div className="panel">
+          <span className="tmao-label inline-block bg-[#FFD21F] text-[#0A0A0B] px-2.5 py-1.5 mb-3.5">This week</span>
+          <br />
+          {latest ? (
+            <>
+              <Chip value={latest.episode_num ? `#${latest.episode_num}` : 'NEW'} label="Every Friday" />
+              <h1 className="display mt-4 text-[clamp(44px,12vw,84px)] lg:text-[clamp(44px,5.4vw,84px)]">
+                {latestTitle.lead}<span className="hl">{latestTitle.hl}</span>
+              </h1>
+              <p className="tmao-label mt-4 text-ink-700">{latestDate}</p>
+              {latest.description && (
+                <p className="mt-3.5 max-w-[600px] font-semibold text-ink-700 text-[clamp(15px,3.8vw,18px)] line-clamp-4">
+                  {latest.description}
+                </p>
+              )}
+              <div className="flex flex-wrap gap-2.5 mt-6">
+                <Link href={`/threads/${latest.id}`} className="btn-primary">Watch &amp; reply →</Link>
+                <Link href="/listen" className="btn-ghost">Listen</Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <Chip value="#1" label="Every Friday" />
+              <h1 className="display mt-4 text-[clamp(44px,12vw,84px)] lg:text-[clamp(44px,5.4vw,84px)]">
+                The Mics <span className="hl">Are Open</span>
+              </h1>
+            </>
+          )}
+        </div>
+      </section>
 
-        {/* Left: text */}
-        <div>
-          <p className="uppercase tracking-[0.3em] text-[10px] font-bold text-clay-500 mb-5 flex items-center gap-3">
-            <span className="inline-block w-8 h-px bg-clay-500" />
-            Kenya&rsquo;s #1 Podcast &nbsp;·&nbsp; Every Friday
-          </p>
-
-          <h1 className="font-display text-[clamp(64px,10vw,120px)] leading-[0.90] text-ink-800 mb-6">
-            THE MICS<br />ARE OPEN
-          </h1>
-
-          <p className="max-w-lg text-base text-ink-600 leading-relaxed mb-6">
+      {/* ── Intro + stats ───────────────────────────────── */}
+      <section className="bleed py-[72px] lg:py-[110px]">
+        <div className="wrap">
+          <p className="section-label">Kenya&rsquo;s #1 Podcast · Every Friday</p>
+          <h2 className="display text-[clamp(34px,8.5vw,72px)]">The Mics <span className="hl">Are Open</span></h2>
+          <p className="text-ink-700 text-[17px] max-w-[640px] mt-5 mb-2.5">
             Seven years of Fridays, and the conversation never stops. Make a profile,
             drop your take on Open Mic, and find the people who felt the same thing you did.
           </p>
-
-          <div className="max-w-lg bg-clay-500/10 border border-clay-500/30 rounded-xl px-5 py-4 mb-10">
-            <p className="text-sm text-ink-700 leading-relaxed">
-              <span className="font-bold text-clay-500">7 years and counting.</span>{' '}
-              We built this site for you — it&rsquo;s been 7 great years and this is your website.
-            </p>
-          </div>
-
-          <div className="flex gap-3 flex-wrap">
+          <p className="text-ink-700 text-[17px] max-w-[640px] mb-7">
+            <span className="font-bold text-white">7 years and counting.</span>{' '}
+            We built this site for you — it&rsquo;s been 7 great years and this is your website.
+          </p>
+          <div className="flex gap-2.5 flex-wrap">
             {user ? (
-              <Link href="/open-mic" className="btn-primary">
-                Open Mic →
-              </Link>
+              <Link href="/open-mic" className="btn-primary">Open Mic →</Link>
             ) : (
               <>
-                <Link href="/signup" className="btn-primary">
-                  Join the community
-                </Link>
-                <Link href="/login" className="btn-ghost">
-                  I already have an account
-                </Link>
+                <Link href="/signup" className="btn-primary">Join the community</Link>
+                <Link href="/login" className="btn-ghost">I already have an account</Link>
               </>
             )}
           </div>
-        </div>
-
-        {/* Right: polaroid collage — desktop */}
-        <div className="hidden md:block relative h-[580px]">
-          {[
-            { src: '/collage/c1.jpg', top: '-4%',  left: '-2%', rotate: '-6deg', zIndex: 2 },
-            { src: '/collage/c3.jpg', top: '22%',  left: '34%', rotate: '5deg',  zIndex: 3 },
-            { src: '/collage/c5.jpg', top: '52%',  left: '2%',  rotate: '-4deg', zIndex: 4 },
-          ].map((img, i) => (
-            <div
-              key={i}
-              style={{
-                position: 'absolute',
-                top: img.top,
-                left: img.left,
-                width: 340,
-                backgroundColor: '#ffffff',
-                padding: '14px 14px 56px 14px',
-                transform: `rotate(${img.rotate})`,
-                zIndex: img.zIndex,
-                boxShadow: '0 20px 60px rgba(0,0,0,0.75)',
-              }}
-            >
-              <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
-                <Image src={img.src} alt="" fill sizes="340px" style={{ objectFit: 'cover' }} />
-              </div>
-            </div>
-          ))}
-          {/* Fade edges into background */}
-          <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-cream-50/60 pointer-events-none" style={{ zIndex: 10 }} />
-          <div className="absolute inset-0 bg-gradient-to-t from-cream-50/80 via-transparent to-transparent pointer-events-none" style={{ zIndex: 10 }} />
-        </div>
-
-        {/* Polaroid collage — mobile only */}
-        <div className="md:hidden flex justify-center gap-4 mt-10 mb-2">
-          {[
-            { src: '/collage/c1.jpg', rotate: '-5deg', mt: '0px' },
-            { src: '/collage/c3.jpg', rotate: '4deg',  mt: '20px' },
-          ].map((img, i) => (
-            <div
-              key={i}
-              style={{
-                width: '44%',
-                backgroundColor: '#ffffff',
-                padding: '10px 10px 38px 10px',
-                transform: `rotate(${img.rotate})`,
-                marginTop: img.mt,
-                boxShadow: '0 12px 40px rgba(0,0,0,0.6)',
-              }}
-            >
-              <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
-                <Image src={img.src} alt="" fill sizes="44vw" style={{ objectFit: 'cover' }} />
-              </div>
-            </div>
-          ))}
-        </div>
-
-      </div>
-
-      {/* ── Hot Take of the Week ────────────────────────── */}
-      <div className="mb-16">
-        <p className="uppercase tracking-[0.3em] text-[9px] font-bold text-clay-500 mb-3 flex items-center gap-2">
-          🔥 Hot Take of the Week
-        </p>
-        <div className="w-10 h-0.5 bg-clay-500 mb-4" />
-        <div className="flex items-center justify-between gap-4 mb-6">
-          <h2 className="font-display text-[clamp(32px,5vw,52px)] leading-[0.95] text-ink-800">
-            Hot Take of the Week
-          </h2>
-          <Image
-            src="/logo-tgc.png"
-            alt="The Good Company"
-            width={360}
-            height={180}
-            className="h-44 w-auto opacity-80 shrink-0"
-          />
-        </div>
-
-        {hotTakeWinner ? (
-          <Link
-            href={`/open-mic/${hotTakeWinner.id}`}
-            className="block card-featured hover:border-clay-500/60 transition group"
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-clay-500 text-cream-50">
-                👑 Winner
-              </span>
-              <span className="text-xs text-ink-400">
-                @{hotTakeWinner.tmao_profiles?.username || 'listener'}
-              </span>
-            </div>
-            <p className="text-ink-800 leading-relaxed text-base">
-              {hotTakeWinner.body}
-            </p>
-            <p className="mt-4 text-xs font-semibold text-clay-500 group-hover:underline">
-              Read the thread →
-            </p>
-          </Link>
-        ) : (
-          <div className="card text-center py-10 border-[#2a2a2a]">
-            <p className="text-2xl mb-3">🎙️</p>
-            <p className="text-ink-600 text-sm">No winner this week yet.</p>
-            <p className="text-ink-500 text-sm mt-1">
-              Drop your hot take on{' '}
-              <Link href="/open-mic" className="text-clay-500 hover:underline font-medium">
-                Open Mic
-              </Link>{' '}
-              — the crew picks every week.
-            </p>
+          <div className="stats mt-11">
+            <div><strong>#1</strong><span className="tmao-label block mt-2.5">In Kenya</span></div>
+            <div><strong>500+</strong><span className="tmao-label block mt-2.5">Episodes &amp; Minisodes</span></div>
+            <div><strong>Every</strong><span className="tmao-label block mt-2.5">Friday</span></div>
+            <div><strong>7 yrs</strong><span className="tmao-label block mt-2.5">And counting</span></div>
           </div>
-        )}
-      </div>
+        </div>
+      </section>
 
-      {/* ── Listener Spotlight ──────────────────────────── */}
-      <div className="mb-16">
-        <p className="uppercase tracking-[0.3em] text-[9px] font-bold text-clay-500 mb-3 flex items-center gap-2">
-          ⭐ Listener Spotlight
-        </p>
-        <div className="w-10 h-0.5 bg-clay-500 mb-4" />
-        <h2 className="font-display text-[clamp(32px,5vw,52px)] leading-[0.95] text-ink-800 mb-6">
-          Listener Spotlight
-        </h2>
-
-        {spotlight ? (
-          <Link
-            href={`/u/${spotlight.username}`}
-            className="block card-featured hover:border-clay-500/60 transition group"
-          >
-            <div className="flex items-start gap-5">
-              <div className="relative w-20 h-20 rounded-full bg-cream-200 overflow-hidden flex items-center justify-center shrink-0">
-                {spotlight.avatar_url ? (
-                  <Image
-                    src={spotlight.avatar_url}
-                    alt={spotlight.display_name || spotlight.username}
-                    fill
-                    sizes="80px"
-                    className="object-cover"
-                  />
-                ) : (
-                  <span className="font-display text-3xl text-clay-500">
-                    {(spotlight.display_name || spotlight.username || '?').slice(0, 1).toUpperCase()}
-                  </span>
-                )}
+      {/* ── Recent episode threads ──────────────────────── */}
+      {previous.length > 0 && (
+        <section className="bleed pb-[72px] lg:pb-[110px]">
+          <div className="wrap">
+            <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
+              <div>
+                <p className="section-label">Weekly ritual</p>
+                <h2 className="display text-[clamp(34px,8.5vw,72px)]">Episode <span className="hl">Threads</span></h2>
               </div>
+              <Link href="/threads/all" className="tmao-label border-b-2 border-clay-500 pb-1 font-extrabold">All episodes →</Link>
+            </div>
+            <div className="grid gap-3.5 md:grid-cols-2 lg:grid-cols-3">
+              {previous.map((t, i) => <EpisodeCard key={t.id} thread={t} index={i + 1} />)}
+            </div>
+          </div>
+        </section>
+      )}
 
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className="text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-clay-500/10 text-clay-500 border border-clay-500/30">
-                    ⭐ This week&apos;s listener
-                  </span>
-                </div>
-                <h3 className="font-display text-2xl text-ink-800 mt-2">
-                  {spotlight.display_name || spotlight.username}
-                </h3>
-                {spotlight.username && (
-                  <p className="text-ink-400 text-sm">@{spotlight.username}</p>
-                )}
-                {spotlight.location && (
-                  <p className="text-ink-500 text-sm mt-0.5">📍 {spotlight.location}</p>
-                )}
-                {spotlight.bio && (
-                  <p className="mt-3 text-ink-600 text-sm leading-relaxed line-clamp-2 italic">
-                    &ldquo;{spotlight.bio}&rdquo;
-                  </p>
-                )}
-                <p className="mt-4 text-xs font-semibold text-clay-500 group-hover:underline">
-                  View profile →
+      {/* ── What's here: Hot Take, Spotlight, features ──── */}
+      <section className="bleed pb-[72px] lg:pb-[110px]">
+        <div className="wrap">
+          <p className="section-label">What&rsquo;s here</p>
+          <h2 className="display text-[clamp(34px,8.5vw,72px)] mb-7">This is <span className="hl-y">your website.</span></h2>
+
+          <div className="grid gap-3.5 md:grid-cols-2 lg:grid-cols-3">
+            {/* Hot Take of the Week */}
+            {hotTakeWinner ? (
+              <Link href={`/open-mic/${hotTakeWinner.id}`} className="block bg-clay-500 p-6 group">
+                <Chip small tone="y" value="🔥" label="Hot Take of the Week" className="mb-4" />
+                <p className="tmao-label text-white mb-2">👑 Winner · @{hotTakeWinner.tmao_profiles?.username || 'listener'}</p>
+                <p className="font-extrabold text-white text-[clamp(19px,5vw,24px)] leading-snug">{hotTakeWinner.body}</p>
+                <span className="inline-block mt-4 tmao-label font-extrabold border-b-2 border-white pb-1">Read the thread →</span>
+              </Link>
+            ) : (
+              <div className="card">
+                <Chip small tone="y" value="🔥" label="Hot Take of the Week" className="mb-4" />
+                <p className="text-ink-600 text-sm">No winner this week yet.</p>
+                <p className="text-ink-500 text-sm mt-1">
+                  Drop your hot take on{' '}
+                  <Link href="/open-mic" className="text-clay-500 hover:underline font-semibold">Open Mic</Link>{' '}
+                  — the crew picks every week.
                 </p>
               </div>
-            </div>
-          </Link>
-        ) : (
-          <div className="card text-center py-10 border-[#2a2a2a]">
-            <p className="text-2xl mb-3">⭐</p>
-            <p className="text-ink-600 text-sm">No spotlight this week yet.</p>
-            <p className="text-ink-500 text-sm mt-1">Check back soon.</p>
+            )}
+
+            {/* Listener Spotlight */}
+            {spotlight ? (
+              <Link href={`/u/${spotlight.username}`} className="card block hover:border-clay-500 transition group">
+                <Chip small tone="p" value="⭐" label="Listener Spotlight" className="mb-4" />
+                <div className="flex items-center gap-4">
+                  <div className="relative w-16 h-16 rounded-full bg-[#26262A] overflow-hidden flex items-center justify-center shrink-0">
+                    {spotlight.avatar_url ? (
+                      <Image src={spotlight.avatar_url} alt={spotlight.display_name || spotlight.username} fill sizes="64px" className="object-cover" />
+                    ) : (
+                      <span className="display text-2xl text-clay-500">
+                        {(spotlight.display_name || spotlight.username || '?').slice(0, 1).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-[clamp(22px,6vw,30px)]">{spotlight.display_name || spotlight.username}</h3>
+                    {spotlight.username && <p className="tmao-label text-ink-600 mt-1.5 text-[10px]">@{spotlight.username}</p>}
+                  </div>
+                </div>
+                {spotlight.location && <p className="text-ink-500 text-sm mt-3">📍 {spotlight.location}</p>}
+                {spotlight.bio && (
+                  <p className="mt-3 text-ink-700 text-sm leading-relaxed line-clamp-3">&ldquo;{spotlight.bio}&rdquo;</p>
+                )}
+                <span className="inline-block mt-4 tmao-label font-extrabold border-b-2 border-clay-500 pb-1">View profile →</span>
+              </Link>
+            ) : (
+              <div className="card">
+                <Chip small tone="p" value="⭐" label="Listener Spotlight" className="mb-4" />
+                <p className="text-ink-600 text-sm">No spotlight this week yet.</p>
+                <p className="text-ink-500 text-sm mt-1">Check back soon.</p>
+              </div>
+            )}
+
+            <FeatureCard tone="r" value="Live" label="Now live" title="Profiles" body="Name, place, photo, and a line about how you found the show." href={user ? '/me' : '/signup'} cta={user ? 'My profile →' : 'Join TMAO →'} />
+            <FeatureCard tone="y" value="Live" label="Now live" title="Open Mic" body="A rolling feed of listener thoughts, reactions, and moments from the show." href="/open-mic" />
+            <FeatureCard tone="p" value="Live" label="Now live" title="Episode Threads" body="Keep talking about the episode long after it ends." href="/threads" />
+            <FeatureCard tone="r" value="#1" label="Kenya’s Podcast" title="The crew" body="G Money, Calvin, Ashley and Andy Young." href="/about" cta="About →" />
           </div>
-        )}
-      </div>
-
-      {/* ── Stats bar ───────────────────────────────────── */}
-      <div className="grid grid-cols-3 border border-[#2a2a2a] rounded-2xl overflow-hidden mb-16 bg-[#161616]"
-           style={{boxShadow: '0 1px 3px rgba(0,0,0,0.5), 0 8px 32px -8px rgba(0,0,0,0.7)'}}>
-        {[
-          ['500+', 'Episodes & Minisodes'],
-          ['Every', 'Friday'],
-          ['#1', 'In Kenya'],
-        ].map(([val, lbl]) => (
-          <div key={lbl} className="px-8 py-6 border-r border-[#2a2a2a] last:border-r-0">
-            <p className="font-display text-5xl text-clay-500 leading-none">{val}</p>
-            <p className="text-[9px] font-bold uppercase tracking-[2.5px] text-ink-600 mt-2">{lbl}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* ── Feature cards ───────────────────────────────── */}
-      <div className="mb-4">
-        <p className="uppercase tracking-[0.3em] text-[9px] font-bold text-clay-500 mb-3">
-          What&rsquo;s here
-        </p>
-        <div className="w-10 h-0.5 bg-clay-500 mb-4" />
-        <h2 className="font-display text-[clamp(32px,5vw,52px)] leading-[0.95] text-ink-800 mb-8">
-          What&rsquo;s here
-        </h2>
-      </div>
-
-      <section className="grid gap-5 md:grid-cols-3">
-        <FeatureCard
-          badge="Now live"
-          title="Profiles"
-          body="Name, place, photo, and a line about how you found the show."
-        />
-        <FeatureCard
-          badge="Now live"
-          title="Open Mic"
-          body="A rolling feed of listener thoughts, reactions, and moments from the show."
-          href="/open-mic"
-        />
-        <FeatureCard
-          badge="Now live"
-          title="Episode Threads"
-          body="Keep talking about the episode long after it ends."
-          href="/threads"
-        />
+        </div>
       </section>
+
+      {/* ── Studio strip: two photos at the same size inside the content column ── */}
+      <section className="bleed pb-[72px] lg:pb-[110px]">
+        <div className="wrap">
+          <div className="grid md:grid-cols-2 gap-1.5">
+            {['/collage/c3.jpg', '/collage/c5.jpg'].map((src) => (
+              <figure key={src} className="photo aspect-video">
+                <Image src={src} alt="Studio session" fill sizes="(min-width:1240px) 600px, (min-width:768px) 50vw, 100vw" className="object-cover" style={{ objectPosition: '50% 35%' }} />
+              </figure>
+            ))}
+          </div>
+          <div className="pt-3"><Chip small value="Fri" label="Every Friday" /></div>
+        </div>
+      </section>
+
+      <CommunityCta />
     </div>
   );
 }
 
-function FeatureCard({ badge, title, body, href }) {
-  const Wrapper = href ? Link : 'div';
-  const isLive = badge === 'Now live';
+function FeatureCard({ tone, value, label, title, body, href, cta = 'Open →' }) {
   return (
-    <Wrapper
-      href={href}
-      className={`card text-left group relative overflow-hidden ${href ? 'cursor-pointer' : ''} ${
-        isLive && href ? 'hover:border-clay-500/60 transition' : 'opacity-60'
-      }`}
-    >
-      {isLive && (
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-clay-500/40 to-transparent" />
-      )}
-      <span
-        className={`inline-block text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full ${
-          isLive
-            ? 'bg-clay-500/10 text-clay-500 border border-clay-500/30'
-            : 'bg-[#1e1e1e] text-ink-400 border border-[#2a2a2a]'
-        }`}
-      >
-        {badge}
-      </span>
-      <h3 className="mt-4 font-display text-3xl text-ink-800">
-        {title}
-      </h3>
-      <p className="mt-2 text-sm text-ink-600 leading-relaxed">{body}</p>
-      {isLive && href && (
-        <p className="mt-5 text-xs font-semibold text-clay-500 group-hover:underline">
-          Open →
-        </p>
-      )}
-    </Wrapper>
+    <Link href={href} className="card block hover:border-clay-500 transition group">
+      <Chip small tone={tone} value={value} label={label} className="mb-4" />
+      <h3 className="text-[clamp(26px,6.8vw,40px)]">{title}</h3>
+      <p className="mt-3 text-ink-700 text-sm leading-relaxed">{body}</p>
+      <span className="inline-block mt-4 tmao-label font-extrabold border-b-2 border-clay-500 pb-1">{cta}</span>
+    </Link>
   );
 }

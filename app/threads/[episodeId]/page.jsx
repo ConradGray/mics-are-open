@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import ThreadRepliesSection from './ThreadRepliesSection';
+import Chip from '@/components/Chip';
+import { splitHighlight } from '@/lib/episodes';
 
 export const dynamic = 'force-dynamic';
 
@@ -80,42 +82,38 @@ export default async function ThreadDetailPage({ params }) {
     year: 'numeric',
   });
 
+  const { lead, hl } = splitHighlight(thread.title);
+
   return (
-    <div className="max-w-4xl mx-auto">
-      <Link
-        href="/threads/all"
-        className="inline-flex items-center gap-1 text-sm text-ink-400 hover:text-clay-500 transition mb-6"
-      >
-        ← Previous Episode Threads
-      </Link>
+    <div className="page-full">
+      <section className="bleed pt-10 lg:pt-16 pb-7">
+        <div className="wrap">
+          <Link
+            href="/threads/all"
+            className="tmao-label inline-block mb-[22px] border-b-2 border-clay-500 pb-1 hover:text-clay-500 transition"
+          >
+            ← Previous Episode Threads
+          </Link>
+          <br />
+          {thread.episode_num ? (
+            <Chip value={`#${thread.episode_num}`} label={`Episode ${thread.episode_num}`} />
+          ) : (
+            <Chip value="TMAO" label="Episode thread" />
+          )}
+          <h1 className="display mt-[18px] max-w-[11em] text-[clamp(44px,12vw,120px)]">
+            {lead}<span className="hl">{hl}</span>
+          </h1>
+          <p className="tmao-label mt-4 text-ink-600">{publishedAt}</p>
+        </div>
+      </section>
 
-      {/* Episode header */}
-      <div className="card mb-6">
-        {thread.episode_num && (
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-clay-500 mb-2">
-            Episode {thread.episode_num}
-          </p>
-        )}
-        <h1 className="font-display text-3xl font-bold text-ink-800 leading-tight">
-          {thread.title}
-        </h1>
-        <p className="text-xs text-ink-400 mt-2">{publishedAt}</p>
-
-        {thread.description && (
-          <p className="mt-3 text-sm text-ink-600 leading-relaxed border-t border-cream-200 pt-3">
-            {thread.description}
-          </p>
-        )}
-
-        {/* Audio / Video embed */}
-        {thread.embed_url && (
-          <div className="mt-4 border-t border-cream-200 pt-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-ink-400 mb-2">
-              Listen
-            </p>
+      {/* Player — the episode's own embed, no overlay or text on top */}
+      {thread.embed_url && (
+        <section className="bleed pb-9">
+          <div className="wrap">
             {/youtube\.com\/embed|youtu\.be/.test(thread.embed_url) ? (
               // YouTube — 16:9 aspect ratio
-              <div className="relative w-full rounded-lg overflow-hidden" style={{ paddingBottom: '56.25%' }}>
+              <div className="relative w-full overflow-hidden border border-[#26262A] bg-black" style={{ paddingBottom: '56.25%' }}>
                 <iframe
                   src={thread.embed_url}
                   className="absolute inset-0 w-full h-full"
@@ -133,7 +131,7 @@ export default async function ThreadDetailPage({ params }) {
                 height="352"
                 frameBorder="0"
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                className="rounded-xl"
+                
                 title={`Episode ${thread.episode_num || ''}: ${thread.title}`}
               />
             ) : (
@@ -144,31 +142,54 @@ export default async function ThreadDetailPage({ params }) {
                 height="166"
                 frameBorder="0"
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                className="rounded-lg"
+                
                 title={`Episode ${thread.episode_num || ''}: ${thread.title}`}
               />
             )}
           </div>
-        )}
-      </div>
+        </section>
+      )}
 
-      {/* Replies */}
-      <div>
-        <h2 className="font-display text-xl font-semibold text-ink-800 mb-4">
-          {replies?.length
-            ? `${replies.length} ${replies.length === 1 ? 'Reply' : 'Replies'}`
-            : 'Replies'}
-        </h2>
-        <ThreadRepliesSection
-          threadId={thread.id}
-          userId={user?.id || null}
-          replies={replies || []}
-          reactionsByReply={reactionsByReply}
-          currentUserId={user?.id || null}
-          isCrew={isCrew}
-        />
-      </div>
+      <section className="bleed pb-[72px] lg:pb-[110px]">
+        <div className="wrap grid gap-9">
+          <div>
+            <p className="section-label">Listen</p>
+            {thread.description && (
+              <p className="font-semibold text-[clamp(17px,4.4vw,22px)] text-ink-700 max-w-[720px] whitespace-pre-line">
+                {thread.description}
+              </p>
+            )}
+            <div className="flex flex-wrap gap-[18px] mt-6">
+              {[
+                ['https://www.youtube.com/playlist?list=PLURaeuNWMwdy894eBMVPwR67ZDQpSWwsg', 'YouTube'],
+                ['https://open.spotify.com/show/6aU9hxLKdMIEzBfQ2IhYt6', 'Spotify'],
+                ['https://podcasts.apple.com/gb/podcast/the-mics-are-open/id1461697859', 'Apple Podcasts'],
+              ].map(([href, label]) => (
+                <a key={href} href={href} target="_blank" rel="noopener noreferrer"
+                   className="tmao-label font-bold opacity-85 border-b-2 border-clay-500 pb-1 hover:text-clay-500">
+                  {label}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-[#141416] border border-[#26262A] p-[22px] md:p-8 max-w-[900px]">
+            <h2 className="display text-[clamp(30px,7vw,48px)] mb-4">
+              {replies?.length
+                ? `${replies.length} ${replies.length === 1 ? 'Reply' : 'Replies'}`
+                : 'Replies'}
+            </h2>
+            <ThreadRepliesSection
+              threadId={thread.id}
+              userId={user?.id || null}
+              replies={replies || []}
+              reactionsByReply={reactionsByReply}
+              currentUserId={user?.id || null}
+              isCrew={isCrew}
+            />
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
-

@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import Image from 'next/image';
+import Chip from '@/components/Chip';
 
 export const metadata = {
   title: 'About — The Mics Are Open',
@@ -19,53 +21,41 @@ const IG_ICON = (
   </svg>
 );
 
-const polaroids = [
-  { src: '/collage/c2.jpg', top: '0%',  left: '5%',  rotate: '-7deg', zIndex: 2 },
-  { src: '/collage/c6.jpg', top: '28%', left: '38%', rotate: '5deg',  zIndex: 3 },
-  { src: '/collage/c4.jpg', top: '55%', left: '8%',  rotate: '-3deg', zIndex: 4 },
-];
-
 export default function AboutPage() {
   return (
-    <div>
-
-      {/* ── Hero: two-column on desktop ─────────────────── */}
-      <div className="grid md:grid-cols-2 gap-8 items-start pt-12 pb-10 md:pt-20 md:pb-16">
-
-        {/* Left: text + hosts */}
-        <div>
-          <p className="uppercase tracking-[0.3em] text-[9px] font-bold text-clay-500 mb-3 flex items-center gap-3">
-            <span className="inline-block w-8 h-px bg-clay-500" />
-            Kenya&rsquo;s #1 Podcast
-          </p>
-          <div className="w-10 h-0.5 bg-clay-500 mb-4" />
-          <h1 className="font-display text-[clamp(52px,8vw,96px)] leading-[0.90] text-ink-800 mb-8">
-            The Mics<br />Are Open
+    <div className="page-full">
+      {/* Hero — group photo in its own frame, text on a solid panel */}
+      <section className="bleed split-hero">
+        <div className="photo fade-bottom">
+          <Image src="/collage/c2.jpg" alt="G Money, Calvin, Ashley and Andy Young in the studio" fill priority sizes="(min-width:1000px) 60vw, 100vw" className="object-cover" style={{ objectPosition: '50% 35%' }} />
+        </div>
+        <div className="panel">
+          <Chip value="#1" label="Kenya’s Podcast" />
+          <h1 className="display mt-[18px] text-[clamp(40px,10.5vw,104px)] lg:text-[clamp(40px,5vw,80px)]">
+            <small className="block text-[0.4em] font-extrabold tracking-normal mb-[0.35em] text-[#EDEDF0]">Some podcasts are produced.</small>
+            The Mics Are Open just <span className="hl">happens.</span>
           </h1>
-          <p className="font-display text-xl text-ink-700 leading-snug border-l-4 border-clay-500 pl-6 mb-10">
-            Some podcasts are produced. The Mics Are Open just happens.
+          <p className="mt-5 max-w-[560px] font-semibold text-ink-700 text-[clamp(15px,3.8vw,18px)]">
+            Born out of Nairobi&rsquo;s radio culture. Unscripted, unpredictable and completely their own.
           </p>
+        </div>
+      </section>
 
-          {/* Host grid — 2×2 */}
-          <div className="grid grid-cols-2 gap-4">
+      {/* The crew — photo on top, name on a solid panel below */}
+      <section className="bleed py-[72px] lg:py-[110px]">
+        <div className="wrap">
+          <p className="section-label">On the mics</p>
+          <h2 className="display text-[clamp(34px,8.5vw,72px)]">The <span className="hl">crew</span></h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 md:gap-3.5 mt-8">
             {hosts.map((host) => (
-              <a
-                key={host.name}
-                href={host.ig}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center gap-3 p-3 rounded-xl border border-cream-200/20 hover:border-clay-500/40 transition"
-              >
-                <div className="w-14 h-14 rounded-full overflow-hidden shrink-0 border-2 border-cream-200/30 group-hover:border-clay-500/50 transition">
-                  <img
-                    src={host.photo}
-                    alt={host.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
-                  />
+              <a key={host.name} href={host.ig} target="_blank" rel="noopener noreferrer"
+                 className="group flex flex-col border border-[#26262A] hover:border-clay-500 transition">
+                <div className="photo aspect-[4/5]">
+                  <Image src={host.photo} alt={host.name} fill sizes="(min-width:768px) 25vw, 50vw" className="object-cover transition-transform duration-500 group-hover:scale-[1.04]" style={{ objectPosition: '50% 25%' }} />
                 </div>
-                <div className="min-w-0">
-                  <p className="font-semibold text-ink-800 text-sm leading-tight">{host.name}</p>
-                  <span className="inline-flex items-center gap-1 text-[11px] text-ink-400 group-hover:text-[#E1306C] transition mt-0.5">
+                <div className="bg-[#141416] p-3 md:p-4">
+                  <strong className="block display text-[clamp(20px,5.4vw,34px)]">{host.name}</strong>
+                  <span className="inline-flex items-center gap-1.5 mt-2 bg-white text-[#0A0A0B] group-hover:bg-clay-500 group-hover:text-white font-bold text-[10px] tracking-[0.14em] px-[7px] py-[5px] transition">
                     {IG_ICON} Instagram
                   </span>
                 </div>
@@ -73,111 +63,114 @@ export default function AboutPage() {
             ))}
           </div>
         </div>
+      </section>
 
-        {/* Right: polaroid collage — desktop */}
-        <div className="hidden md:block relative h-[520px]">
-          {polaroids.map((img, i) => (
-            <div
-              key={i}
-              style={{
-                position: 'absolute',
-                top: img.top,
-                left: img.left,
-                width: 300,
-                backgroundColor: '#ffffff',
-                padding: '12px 12px 48px 12px',
-                transform: `rotate(${img.rotate})`,
-                zIndex: img.zIndex,
-                boxShadow: '0 20px 60px rgba(0,0,0,0.75)',
-              }}
-            >
-              <img
-                src={img.src}
-                alt=""
-                style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block' }}
-              />
-            </div>
-          ))}
-          <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-cream-50/60 pointer-events-none" style={{ zIndex: 10 }} />
-          <div className="absolute inset-0 bg-gradient-to-t from-cream-50/80 via-transparent to-transparent pointer-events-none" style={{ zIndex: 10 }} />
+      {/* Story */}
+      <section className="bleed pb-[72px] lg:pb-[110px]">
+        <div className="wrap grid gap-9 md:grid-cols-[1fr_1.2fr] md:items-start">
+          <div className="border-l-[6px] border-clay-500 pl-[18px] md:sticky md:top-32">
+            <p className="section-label">The show</p>
+            <p className="display text-[clamp(36px,9vw,76px)]">
+              <span className="block">No script.</span>
+              <span className="block">No agenda.</span>
+              <span className="block hl">No filter.</span>
+            </p>
+          </div>
+          <div className="space-y-[18px] text-ink-700 text-[17px] leading-relaxed max-w-[640px]">
+            <p>
+              Born out of Nairobi&rsquo;s radio culture, The Mics Are Open brings together a group of
+              broadcasters — G Money, Calvin, Ashley and Andy Young — for weekly conversations that
+              are unscripted, unpredictable and completely their own. The topics range from
+              relationships to politics, pop culture to the everyday absurdities of life in Kenya and
+              beyond. No script. No agenda. No filter. Just people who have spent years behind
+              microphones finally saying exactly what they think — and occasionally what they
+              probably shouldn&rsquo;t.
+            </p>
+            <p>
+              What makes the show work isn&rsquo;t a format. It&rsquo;s the chemistry. These are people who have
+              lived parallel lives in the same city, worked the same rooms, navigated the same
+              industry, and accumulated enough shared history to be genuinely honest with each other
+              on mic. That honesty is what listeners keep coming back for. Every episode feels like
+              walking into a conversation that was already happening — warm, chaotic, and impossible
+              to predict.
+            </p>
+          </div>
         </div>
+      </section>
 
-        {/* Polaroids — mobile (2 stacked) */}
-        <div className="md:hidden flex justify-center gap-4 mt-2 mb-4">
+      {/* Photo strip — two photos at the same size (equal columns, 16:9, cover),
+          in their own frames with nothing on top; the chip sits on a solid bar below */}
+      <section className="bleed">
+        <div className="wrap">
+        <div className="grid md:grid-cols-2 gap-1.5">
           {[
-            { src: '/collage/c2.jpg', rotate: '-5deg', mt: '0px' },
-            { src: '/collage/c6.jpg', rotate: '4deg',  mt: '20px' },
-          ].map((img, i) => (
-            <div
-              key={i}
-              style={{
-                width: '44%',
-                backgroundColor: '#ffffff',
-                padding: '10px 10px 36px 10px',
-                transform: `rotate(${img.rotate})`,
-                marginTop: img.mt,
-                boxShadow: '0 12px 40px rgba(0,0,0,0.6)',
-              }}
-            >
-              <img
-                src={img.src}
-                alt=""
-                style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', display: 'block' }}
-              />
-            </div>
+            { src: '/collage/c6.jpg', alt: 'The hosts mid-conversation in the studio' },
+            { src: '/collage/kodong.jpg', alt: 'The Mics Are Open with Kodong Klan in the studio' },
+          ].map((img) => (
+            <figure key={img.src} className="photo aspect-video">
+              <Image src={img.src} alt={img.alt} fill sizes="(min-width:1240px) 600px, (min-width:768px) 50vw, 100vw" className="object-cover" style={{ objectPosition: '50% 35%' }} />
+            </figure>
           ))}
         </div>
-      </div>
+        <div className="pt-3"><Chip small value="Fri" label="Every Friday" /></div>
+        </div>
+      </section>
 
-      {/* ── Body content ────────────────────────────────── */}
-      <div className="max-w-3xl">
-
-        {/* Body copy */}
-        <div className="space-y-5 text-ink-600 leading-relaxed mb-12">
-          <p>
-            Born out of Nairobi&rsquo;s radio culture, The Mics Are Open brings together a group of
-            broadcasters — G Money, Calvin, Ashley and Andy Young — for weekly conversations that
-            are unscripted, unpredictable and completely their own. The topics range from
-            relationships to politics, pop culture to the everyday absurdities of life in Kenya and
-            beyond. No script. No agenda. No filter. Just people who have spent years behind
-            microphones finally saying exactly what they think — and occasionally what they
-            probably shouldn&rsquo;t.
-          </p>
-          <p>
-            What makes the show work isn&rsquo;t a format. It&rsquo;s the chemistry. These are people who have
-            lived parallel lives in the same city, worked the same rooms, navigated the same
-            industry, and accumulated enough shared history to be genuinely honest with each other
-            on mic. That honesty is what listeners keep coming back for. Every episode feels like
-            walking into a conversation that was already happening — warm, chaotic, and impossible
-            to predict.
-          </p>
-          <p>
+      {/* Following + stats */}
+      <section className="bleed py-[72px] lg:py-[110px]">
+        <div className="wrap">
+          <p className="section-label">By the numbers</p>
+          <h2 className="display text-[clamp(34px,8.5vw,72px)]">Real conversation <span className="hl">is enough.</span></h2>
+          <p className="text-ink-700 text-[17px] max-w-[680px] mt-[22px] mb-9">
             The show has built a loyal following across Spotify, Apple Podcasts and beyond. Not
             because it chases trends, but because it doesn&rsquo;t. The Mics Are Open has always trusted
             that real conversation — messy, funny, and occasionally profound — is enough. It turns
             out it is.
           </p>
-          <p>
-            Over the years the podcast has covered everything from love and marriage to Kenyan
-            politics, Drake versus Kendrick, what it means to come home, and whether the grocery
-            store is genuinely a viable place to meet your partner. The range is the point. Life
-            doesn&rsquo;t stay in one lane and neither does the show.
-          </p>
-          <p className="font-semibold text-ink-700">
-            Available weekly wherever you get your podcasts.
-          </p>
-        </div>
-
-        {/* CTA strip */}
-        <div className="border-t-2 border-clay-500 pt-8 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-          <p className="text-ink-600 text-sm">Ready to join the conversation?</p>
-          <div className="flex gap-3 flex-wrap">
-            <Link href="/listen" className="btn-primary text-sm">Listen →</Link>
-            <Link href="/open-mic" className="btn-ghost text-sm">Open Mic</Link>
+          <div className="stats">
+            <div><strong>#1</strong><span className="tmao-label block mt-2.5">In Kenya</span></div>
+            <div><strong>500+</strong><span className="tmao-label block mt-2.5">Episodes &amp; minisodes</span></div>
+            <div><strong>7 yrs</strong><span className="tmao-label block mt-2.5">And counting</span></div>
+            <div><strong>Fri</strong><span className="tmao-label block mt-2.5">Every week</span></div>
           </div>
         </div>
-      </div>
+      </section>
 
+      {/* Range */}
+      <section className="bleed pb-[72px] lg:pb-[110px]">
+        <div className="wrap">
+          <p className="section-label">The range is the point</p>
+          <h2 className="display text-[clamp(34px,8.5vw,72px)]">Life doesn&rsquo;t stay in one lane. <span className="hl-y">Neither does the show.</span></h2>
+          <ul className="flex flex-wrap gap-2.5 mt-7">
+            {['Love & marriage', 'Kenyan politics', 'Drake vs Kendrick', 'What it means to come home', 'Is the grocery store a viable place to meet your partner?'].map((t, i) => (
+              <li key={t} className={`font-extrabold uppercase text-[clamp(14px,3.6vw,20px)] px-3.5 py-2.5 border ${
+                i === 2 ? 'bg-clay-500 border-clay-500' : i === 4 ? 'bg-[#FFD21F] border-[#FFD21F] text-[#0A0A0B]' : 'bg-[#141416] border-[#26262A]'
+              }`}>{t}</li>
+            ))}
+          </ul>
+          <p className="text-ink-700 text-[17px] max-w-[680px] mt-[22px]">
+            Over the years the podcast has covered all of it — and plenty more. Available weekly wherever you get your podcasts.
+          </p>
+        </div>
+      </section>
+
+      {/* CTA — solid panel, photo in its own frame */}
+      <section className="bleed split-hero" style={{ background: '#141416' }}>
+        <div className="photo">
+          <Image src="/collage/c6.jpg" alt="" fill sizes="(min-width:1000px) 60vw, 100vw" className="object-cover" />
+        </div>
+        <div className="panel">
+          <Chip value="New" label="Every Friday" />
+          <h2 className="display mt-[18px] mb-7 text-[clamp(38px,9.5vw,96px)] lg:text-[clamp(38px,4.6vw,72px)]">
+            Ready to join the <span className="hl">conversation?</span>
+          </h2>
+          <div className="flex flex-wrap gap-2.5">
+            <Link href="/listen" className="btn-primary">Listen →</Link>
+            <Link href="/open-mic" className="btn-white">Open Mic</Link>
+            <Link href="/signup" className="btn-ghost">Join TMAO</Link>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

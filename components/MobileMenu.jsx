@@ -18,40 +18,39 @@ export default function MobileMenu({ user, profile }) {
   }
 
   return (
-    <div className="sm:hidden relative">
+    <div className="lg:hidden relative">
       {/* Hamburger button */}
       <button
         onClick={() => setOpen(v => !v)}
-        className="flex flex-col gap-1.5 p-2 rounded-lg hover:bg-clay-500/10 transition"
+        className="border-2 border-white text-white font-bold text-[11px] leading-none uppercase tracking-[0.28em] px-3 py-2.5 hover:border-clay-500 hover:text-clay-500 transition"
         aria-label="Toggle menu"
+        aria-expanded={open}
       >
-        <span className={`block w-5 h-0.5 bg-clay-500 transition-all duration-200 ${open ? 'rotate-45 translate-y-2' : ''}`} />
-        <span className={`block w-5 h-0.5 bg-clay-500 transition-all duration-200 ${open ? 'opacity-0' : ''}`} />
-        <span className={`block w-5 h-0.5 bg-clay-500 transition-all duration-200 ${open ? '-rotate-45 -translate-y-2' : ''}`} />
+        {open ? 'Close' : 'Menu'}
       </button>
 
       {/* Dropdown */}
       {open && (
-        <div className="fixed top-24 left-0 right-0 bg-cream-50 border-b-2 border-clay-500 z-50 px-6 py-4 flex flex-col gap-2">
-          <Link href="/about" onClick={() => setOpen(false)} className="btn-nav justify-center py-3">About</Link>
-          <Link href="/open-mic" onClick={() => setOpen(false)} className="btn-nav justify-center py-3">Open Mic</Link>
-          <Link href="/threads" onClick={() => setOpen(false)} className="btn-nav justify-center py-3">Threads</Link>
-          <Link href="/listen" onClick={() => setOpen(false)} className="btn-nav justify-center py-3">Listen</Link>
-          <div className="w-full h-px bg-clay-500/20 my-1" />
+        <div className="fixed top-[76px] left-5 right-5 bg-[#141416] border border-[#26262A] z-50 py-2 flex flex-col">
+          <Link href="/about" onClick={() => setOpen(false)} className="px-5 py-3.5 font-extrabold uppercase tracking-[0.2em] text-[13px] text-white border-b border-[#26262A] hover:text-clay-500 text-left">About</Link>
+          <Link href="/open-mic" onClick={() => setOpen(false)} className="px-5 py-3.5 font-extrabold uppercase tracking-[0.2em] text-[13px] text-white border-b border-[#26262A] hover:text-clay-500 text-left">Open Mic</Link>
+          <Link href="/threads" onClick={() => setOpen(false)} className="px-5 py-3.5 font-extrabold uppercase tracking-[0.2em] text-[13px] text-white border-b border-[#26262A] hover:text-clay-500 text-left">Threads</Link>
+          <Link href="/listen" onClick={() => setOpen(false)} className="px-5 py-3.5 font-extrabold uppercase tracking-[0.2em] text-[13px] text-white border-b border-[#26262A] hover:text-clay-500 text-left">Listen</Link>
+          
           {user ? (
             <>
               {profile?.is_crew && (
-                <Link href="/admin" onClick={() => setOpen(false)} className="btn-nav justify-center py-3">Admin</Link>
+                <Link href="/admin" onClick={() => setOpen(false)} className="px-5 py-3.5 font-extrabold uppercase tracking-[0.2em] text-[13px] text-white border-b border-[#26262A] hover:text-clay-500 text-left">Admin</Link>
               )}
-              <Link href="/me" onClick={() => setOpen(false)} className="btn-nav justify-center py-3">
+              <Link href="/me" onClick={() => setOpen(false)} className="px-5 py-3.5 font-extrabold uppercase tracking-[0.2em] text-[13px] text-white border-b border-[#26262A] hover:text-clay-500 text-left">
                 {profile?.display_name || 'My Profile'}
               </Link>
-              <button onClick={handleSignOut} className="btn-nav justify-center py-3">Sign out</button>
+              <button onClick={handleSignOut} className="px-5 py-3.5 font-extrabold uppercase tracking-[0.2em] text-[13px] text-white border-b border-[#26262A] hover:text-clay-500 text-left">Sign out</button>
             </>
           ) : (
             <>
-              <Link href="/login" onClick={() => setOpen(false)} className="btn-nav justify-center py-3">Log in</Link>
-              <Link href="/signup" onClick={() => setOpen(false)} className="btn-primary justify-center py-3">Join TMAO</Link>
+              <Link href="/login" onClick={() => setOpen(false)} className="px-5 py-3.5 font-extrabold uppercase tracking-[0.2em] text-[13px] text-white border-b border-[#26262A] hover:text-clay-500 text-left">Log in</Link>
+              <Link href="/signup" onClick={() => setOpen(false)} className="btn-primary mx-3 mt-2 mb-1">Join TMAO</Link>
             </>
           )}
         </div>
