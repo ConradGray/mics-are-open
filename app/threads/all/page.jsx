@@ -1,5 +1,7 @@
-import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
+import Chip from '@/components/Chip';
+import EpisodeCard from '@/components/EpisodeCard';
+import CommunityCta from '@/components/CommunityCta';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,62 +20,39 @@ export default async function AllThreadsPage() {
     `)
     .order('published_at', { ascending: false });
 
-  return (
-    <div className="max-w-4xl mx-auto">
-      <div className="mb-8">
-        <p className="uppercase tracking-[0.3em] text-[9px] font-bold text-clay-500 mb-3 flex items-center gap-3">
-          <span className="inline-block w-8 h-px bg-clay-500" />
-          Weekly ritual
-        </p>
-        <div className="w-10 h-0.5 bg-clay-500 mb-4" />
-        <h1 className="font-display text-[clamp(48px,7vw,80px)] leading-[0.90] text-ink-800">
-          Episode<br />Threads
-        </h1>
-        <p className="mt-3 text-sm text-ink-600 leading-relaxed">
-          Every episode, a new thread. Dig in, react, talk back.
-        </p>
-      </div>
+  const latestNum = threads?.[0]?.episode_num;
 
-      {threads && threads.length > 0 ? (
-        <div className="space-y-2">
-          {threads.map((thread) => {
-            const replyCount = thread.tmao_thread_replies?.length || 0;
-            const date = new Date(thread.published_at).toLocaleDateString(undefined, {
-              month: 'short', day: 'numeric', year: 'numeric',
-            });
-            return (
-              <Link
-                key={thread.id}
-                href={`/threads/${thread.id}`}
-                className="card block hover:border-clay-500/40 transition group py-3"
-              >
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    {thread.episode_num && (
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-clay-500 mr-2">
-                        Ep. {thread.episode_num}
-                      </span>
-                    )}
-                    <span className="font-semibold text-ink-700 text-sm group-hover:text-clay-500 transition">
-                      {thread.title}
-                    </span>
-                    <p className="text-[11px] text-ink-400 mt-0.5">
-                      {date} · {replyCount} {replyCount === 1 ? 'reply' : 'replies'}
-                    </p>
-                  </div>
-                  <span className="text-clay-500 group-hover:translate-x-0.5 transition-transform shrink-0">→</span>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      ) : (
-        <div className="card text-center">
-          <p className="text-ink-400 text-sm">
-            No threads yet. The first episode drops soon.
+  return (
+    <div className="page-full">
+      <section className="bleed pt-12 lg:pt-20 pb-7">
+        <div className="wrap">
+          <Chip value={latestNum ? `#${latestNum}` : 'TMAO'} label="Weekly ritual" />
+          <h1 className="display mt-[18px] text-[clamp(46px,12vw,120px)]">
+            Episode <span className="hl">Threads</span>
+          </h1>
+          <p className="mt-[18px] max-w-[560px] font-semibold text-ink-700 text-[clamp(15px,3.8vw,18px)]">
+            Every episode, a new thread. Dig in, react, talk back.
           </p>
         </div>
-      )}
+      </section>
+
+      <section className="bleed pb-[72px] lg:pb-[110px]">
+        <div className="wrap">
+          {threads && threads.length > 0 ? (
+            <div className="grid gap-3.5 md:grid-cols-2 lg:grid-cols-3">
+              {threads.map((thread, i) => (
+                <EpisodeCard key={thread.id} thread={thread} index={i} feature={i === 0} />
+              ))}
+            </div>
+          ) : (
+            <div className="card text-center">
+              <p className="text-ink-400 text-sm">No threads yet. The first episode drops soon.</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <CommunityCta />
     </div>
   );
 }

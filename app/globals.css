@@ -1,65 +1,184 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;0,900;1,500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────────────────────────
+   TMAO thumbnail design language
+   black #0A0A0B · white · highlight red #E4252B
+   alternates: yellow #FFD21F, purple #6A2C91
+   Montserrat 900 all-caps headlines · Montserrat 600 wide-tracked labels
+
+   FACES RULE (Conrad): faces stay bright and sharp.
+   - No gradients or overlays across photos, no text on top of faces.
+   - Photos sit in their own frame; text lives on solid panels.
+   - The only darkening allowed is a short fade on a photo's bottom edge.
+   ───────────────────────────────────────────────────────────── */
+
 :root {
-  --bg:    #0D0D0D;
-  --lime:  #C7FF00;
-  --white: #F0F0F0;
+  --ink:    #0A0A0B;
+  --ink-2:  #141416;
+  --line:   #26262A;
+  --white:  #FFFFFF;
+  --mute:   #B9B9BF;
+  --red:    #E4252B;
+  --yellow: #FFD21F;
+  --purple: #6A2C91;
+  /* legacy names kept so nothing else breaks */
+  --bg:     #0A0A0B;
+  --lime:   #E4252B;
 }
 
 html,
 body {
-  background-color: var(--bg);
+  background-color: var(--ink);
   color: var(--white);
   min-height: 100vh;
 }
 
 body {
-  font-family: 'Poppins', system-ui, sans-serif;
+  font-family: 'Montserrat', system-ui, sans-serif;
+  font-weight: 500;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  overflow-x: hidden;
 }
 
-/* Bebas Neue for all headings */
+/* Montserrat 900, all caps, tight — the thumbnail headline */
 h1, h2, h3 {
-  font-family: 'Bebas Neue', 'Arial Black', Impact, sans-serif;
+  font-family: 'Montserrat', 'Arial Black', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
 }
 
-/* Background — dark with lime glows and subtle dot grid for texture */
+/* Page background — plain studio black (no glows or textures over photos) */
 .bg-cozy {
-  background-color: #0D0D0D;
-  background-image:
-    radial-gradient(ellipse at 15% 0%,   rgba(199,255,0,0.09) 0, transparent 50%),
-    radial-gradient(ellipse at 85% 100%, rgba(199,255,0,0.06) 0, transparent 55%),
-    radial-gradient(circle, rgba(255,255,255,0.035) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 28px 28px;
+  background-color: var(--ink);
 }
 
-/* ── Shared component classes ─────────────────────────── */
+/* ── Layout helpers ─────────────────────────────────────── */
 
-/* Card — elevated dark panel, clearly distinct from background */
+/* Redesigned pages render edge-to-edge: when a page's root has .page-full,
+   the layout's centred <main> drops its max-width and padding.
+   Every other page keeps the original centred container. */
+.site-main:has(> .page-full) {
+  max-width: none;
+  padding: 0;
+}
+.bleed { width: 100%; }
+.wrap {
+  @apply mx-auto w-full max-w-[1240px] px-5 md:px-9 lg:px-12;
+}
+
+/* ── Type ───────────────────────────────────────────────── */
+.display {
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+}
+.tmao-label {
+  @apply font-semibold uppercase text-xs;
+  letter-spacing: 0.32em;
+}
+.hl   { color: var(--red); }
+.hl-y { color: var(--yellow); }
+.kicker {
+  @apply flex items-center gap-3.5 mb-4;
+}
+.kicker::before {
+  content: "";
+  width: 28px;
+  height: 4px;
+  background: var(--red);
+}
+
+/* ── The episode chip:  [#371 | EVERY FRIDAY] ──────────── */
+.chip {
+  display: inline-flex;
+  align-items: stretch;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.45);
+}
+.chip > b {
+  background: var(--red);
+  color: #fff;
+  font-weight: 900;
+  font-size: clamp(18px, 4.6vw, 30px);
+  padding: 0.18em 0.42em;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+.chip > span {
+  background: #fff;
+  color: var(--ink);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: clamp(10px, 2.4vw, 14px);
+  padding: 0 1.1em;
+  display: flex;
+  align-items: center;
+}
+.chip.sm > b    { font-size: 20px; }
+.chip.sm > span { font-size: 10px; }
+.chip.y > b { background: var(--yellow); color: var(--ink); }
+.chip.p > b { background: var(--purple); }
+.chip.k > b { background: var(--ink); }
+
+/* ── Photo frames (faces rule) ──────────────────────────── */
+/* A photo in its own box. No overlay. Optional bottom-edge fade only. */
+.photo {
+  position: relative;
+  overflow: hidden;
+  background: #000;
+}
+.photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo.fade-bottom::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 12%;
+  background: linear-gradient(180deg, transparent, var(--ink));
+  pointer-events: none;
+}
+
+/* Split hero: solid text panel + clean photo.
+   Mobile: photo on top, text below. Desktop: text left, photo right. */
+.split-hero {
+  display: grid;
+  background: var(--ink);
+}
+.split-hero .photo { aspect-ratio: 16 / 9; }
+.split-hero .photo.portrait { aspect-ratio: 4 / 5; }
+.split-hero .panel { padding: 22px 20px 40px; }
+@media (min-width: 1000px) {
+  .split-hero { grid-template-columns: minmax(0, .95fr) minmax(0, 1.45fr); align-items: center; }
+  .split-hero .photo { order: 2; }
+  .split-hero .photo.portrait { aspect-ratio: 4 / 3; }
+  .split-hero .photo.fade-bottom::after { display: none; }
+  /* line the text up with the centred 1240px content column */
+  .split-hero .panel { order: 1; padding: 40px 40px 40px max(48px, calc((100vw - 1240px) / 2 + 48px)); }
+}
+
+/* ── Shared component classes ───────────────────────────── */
+
+/* Card — solid raised panel, square edges like the thumbnails */
 .card {
-  @apply bg-[#161616] backdrop-blur-sm rounded-2xl border border-[#2a2a2a] p-6;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.5), 0 8px 32px -8px rgba(0,0,0,0.7);
+  @apply bg-[#141416] rounded-none border border-[#26262A] p-6;
 }
-
-/* Card hover lift */
 .card-hover {
-  @apply transition-transform duration-200 hover:-translate-y-0.5;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.5), 0 8px 32px -8px rgba(0,0,0,0.7);
+  @apply transition-colors duration-200 hover:border-clay-500;
 }
 
-/* Lime accent divider */
 .lime-rule {
-  @apply block w-10 h-0.5 bg-clay-500;
+  @apply block w-7 h-1 bg-clay-500;
 }
 
-/* Form input */
 .input {
-  @apply w-full rounded-xl border border-[#2a2a2a] bg-[#111111]
+  @apply w-full rounded-none border border-[#26262A] bg-[#111113]
          px-4 py-3
          text-ink-800 placeholder:text-ink-400
          focus:border-clay-500 focus:outline-none focus:ring-1 focus:ring-clay-500/30
@@ -67,46 +186,96 @@ h1, h2, h3 {
 }
 
 .label {
-  @apply block text-sm font-medium text-ink-600 mb-1.5 uppercase tracking-wider;
+  @apply block text-xs font-semibold text-ink-600 mb-1.5 uppercase tracking-[0.2em];
 }
 
-/* Primary button — lime fill */
+/* Primary button — solid red, white type */
 .btn-primary {
-  @apply inline-flex items-center justify-center
-         rounded-xl bg-clay-500 px-5 py-3
-         text-[#0D0D0D] font-bold text-sm tracking-wider uppercase
-         shadow-lime
-         hover:bg-clay-600 active:bg-clay-700
+  @apply inline-flex items-center justify-center gap-2.5
+         rounded-none bg-clay-500 px-5 py-4
+         text-white font-extrabold text-[13px] tracking-[0.18em] uppercase
+         hover:bg-clay-600 active:bg-clay-400
          disabled:opacity-50 disabled:cursor-not-allowed
          transition;
 }
 
-/* Ghost button */
+/* White button */
+.btn-white {
+  @apply inline-flex items-center justify-center gap-2.5
+         rounded-none bg-white px-5 py-4
+         text-[#0A0A0B] font-extrabold text-[13px] tracking-[0.18em] uppercase
+         hover:bg-[#ececef] transition;
+}
+
+/* Ghost button — white outline */
 .btn-ghost {
   @apply inline-flex items-center justify-center
-         rounded-xl border border-[#2a2a2a] px-5 py-3
-         text-ink-800 font-medium text-sm
+         rounded-none border-2 border-white px-5 py-3.5
+         text-white font-extrabold text-[13px] tracking-[0.18em] uppercase
          hover:border-clay-500 hover:text-clay-500
          transition;
 }
 
-/* Nav button — lime green, blocked, single line */
+/* Nav link — white, wide-tracked caps */
 .btn-nav {
   @apply inline-flex items-center justify-center whitespace-nowrap
-         rounded-lg px-3 py-1.5
-         text-clay-500 font-black text-xs uppercase tracking-widest
-         border border-clay-500/30
-         hover:bg-clay-500/10 hover:border-clay-500
+         px-3 py-2
+         text-white font-bold text-xs uppercase tracking-[0.24em]
+         hover:text-clay-500
          transition;
 }
 
-/* Section label — small uppercase lime label with line */
 .section-label {
-  @apply uppercase tracking-[0.3em] text-[9px] font-bold text-clay-500 flex items-center gap-3 mb-3;
+  @apply uppercase tracking-[0.32em] text-xs font-semibold text-ink-600 flex items-center gap-3.5 mb-4;
+}
+.section-label::before {
+  content: "";
+  width: 28px;
+  height: 4px;
+  background: var(--red);
+  flex-shrink: 0;
 }
 
-/* Lime glow card — for featured/highlighted cards */
+/* Featured card — red-edged panel */
 .card-featured {
-  @apply bg-[#161616] rounded-2xl border border-clay-500/30 p-6;
-  box-shadow: 0 0 0 1px rgba(199,255,0,0.05), 0 8px 40px -8px rgba(199,255,0,0.12), 0 8px 32px -8px rgba(0,0,0,0.7);
+  @apply bg-[#141416] rounded-none border border-clay-500 p-6;
+}
+
+/* ── Episode card (thumbnail on top, text on a solid panel below) ── */
+.ep-card {
+  @apply flex flex-col border border-[#26262A] bg-[#141416] transition-colors;
+}
+.ep-card:hover { border-color: var(--red); }
+.ep-card .thumb { aspect-ratio: 16 / 9; overflow: hidden; background: #000; }
+.ep-card .thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+.ep-card:hover .thumb img { transform: scale(1.04); }
+.ep-card .ct { @apply flex flex-1 flex-col px-4 pb-[18px] pt-4; }
+.ep-card h3 { @apply mt-3.5; font-size: clamp(22px, 6vw, 28px); }
+.ep-card .meta { @apply mt-auto pt-3.5 text-[10px] text-ink-600; }
+.ep-card.feature { @apply bg-clay-500 border-clay-500; }
+.ep-card.feature .hl { color: var(--ink); }
+.ep-card.feature .chip > b { background: var(--ink); }
+.ep-card.feature .meta { color: #fff; }
+.ep-card.feature h3 { font-size: clamp(32px, 8vw, 56px); }
+@media (min-width: 720px) {
+  .ep-card.feature { grid-column: 1 / -1; flex-direction: row; }
+  .ep-card.feature .thumb { flex: 0 0 58%; }
+  .ep-card.feature .ct { padding: 28px; }
+}
+
+/* Stats grid */
+.stats {
+  @apply grid grid-cols-2 md:grid-cols-4 border-t border-l border-[#26262A];
+}
+.stats > div {
+  @apply px-4 py-6 border-r border-b border-[#26262A];
+}
+.stats strong {
+  @apply block font-black uppercase leading-[0.9] tracking-[-0.02em];
+  font-size: clamp(40px, 10vw, 68px);
+}
+.stats > div:first-child strong { color: var(--red); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
 }

@@ -13,50 +13,62 @@ module.exports = {
 
         // "cream" → dark backgrounds
         cream: {
-          50:  '#0D0D0D',   // page background
-          100: '#161616',   // surface / card background — lifted for contrast
-          200: '#2a2a2a',   // borders / dividers — slightly lighter
+          50:  '#0A0A0B',   // page background — studio black
+          100: '#141416',   // surface / raised panel
+          200: '#26262A',   // borders / dividers
         },
 
-        // "clay" → lime green accent
+        // "clay" → TMAO thumbnail red (was lime)
         clay: {
-          50:  'rgba(199,255,0,0.07)',   // subtle lime tint
-          100: 'rgba(199,255,0,0.12)',
-          200: 'rgba(199,255,0,0.22)',
-          300: '#9dcc00',
-          400: '#b8ee00',
-          500: '#C7FF00',   // PRIMARY accent — was clay orange
-          600: '#d6ff1a',   // hover / lighter lime
-          700: '#e0ff4d',
+          50:  'rgba(228,37,43,0.08)',
+          100: 'rgba(228,37,43,0.14)',
+          200: 'rgba(228,37,43,0.24)',
+          300: '#b81d22',
+          400: '#cf2026',
+          500: '#E4252B',   // PRIMARY accent — highlight red / number chip
+          600: '#f03a40',   // hover
+          700: '#ff5a5f',
+        },
+
+        // Thumbnail alternates
+        tmao: {
+          ink:    '#0A0A0B',
+          panel:  '#141416',
+          line:   '#26262A',
+          red:    '#E4252B',
+          yellow: '#FFD21F',
+          purple: '#6A2C91',
         },
 
         // "ink" → off-white text scale
         ink: {
-          400: '#555555',   // very muted
-          500: '#777777',   // muted / secondary text (added)
-          600: '#999999',   // secondary text
-          800: '#F0F0F0',   // primary text — was dark ink
+          400: '#7C7C84',   // very muted
+          500: '#9A9AA2',   // muted / secondary text
+          600: '#B9B9BF',   // secondary text
+          700: '#D6D6DC',   // body copy
+          800: '#FFFFFF',   // primary text
         },
 
         // "sage" → dark surface variants
         sage: {
-          200: '#1a1a1a',
-          400: '#242424',
-          600: '#2e2e2e',
+          200: '#141416',
+          400: '#1c1c20',
+          600: '#26262A',
         },
       },
 
       fontFamily: {
-        // Display / headings → Bebas Neue (all-caps, bold)
-        display: ['"Bebas Neue"', '"Arial Black"', 'Impact', 'sans-serif'],
-        // Body → Poppins (clean, modern)
-        sans: ['"Poppins"', 'Arial', 'sans-serif'],
+        // Thumbnail design language: Montserrat everywhere
+        // (900 all-caps for headlines, 600 wide-tracked for labels)
+        display: ['Montserrat', '"Arial Black"', 'sans-serif'],
+        sans: ['Montserrat', 'system-ui', 'Arial', 'sans-serif'],
       },
 
       boxShadow: {
         soft: '0 2px 12px -2px rgba(0,0,0,0.5)',
         card: '0 8px 32px -8px rgba(0,0,0,0.6)',
-        lime: '0 4px 20px -4px rgba(199,255,0,0.25)',
+        lime: '0 8px 30px rgba(0,0,0,0.45)',   // name kept so existing classes still work
+        chip: '0 8px 30px rgba(0,0,0,0.45)',
       },
 
       letterSpacing: {

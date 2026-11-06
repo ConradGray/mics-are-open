@@ -21,8 +21,8 @@ export default async function Nav() {
   }
 
   return (
-    <header className="w-full border-b-2 border-clay-500 bg-cream-50/95 backdrop-blur sticky top-0 z-10">
-      <nav className="mx-auto max-w-5xl flex items-center justify-between px-6 h-24">
+    <header className="w-full border-b border-[#26262A] bg-[#0A0A0B] sticky top-0 z-30">
+      <nav className="wrap flex items-center justify-between gap-4 h-[76px] lg:h-24">
 
         {/* Logo */}
         <Link href="/" className="flex items-center">
@@ -31,19 +31,19 @@ export default async function Nav() {
             alt="The Mics Are Open"
             width={340}
             height={80}
-            className="h-20 w-auto"
+            className="h-[52px] lg:h-[72px] w-auto"
             priority
           />
         </Link>
 
         {/* Desktop nav links */}
-        <div className="hidden sm:flex items-center gap-1">
+        <div className="hidden lg:flex items-center gap-2">
           <Link href="/about" className="btn-nav">About</Link>
           <Link href="/open-mic" className="btn-nav">Open Mic</Link>
           <Link href="/threads" className="btn-nav">Threads</Link>
           <Link href="/listen" className="btn-nav">Listen</Link>
 
-          <span className="w-px h-5 bg-cream-200 mx-2" />
+          <span className="w-px h-5 bg-[#26262A] mx-2" />
 
           {user ? (
             <>
@@ -57,8 +57,8 @@ export default async function Nav() {
             </>
           ) : (
             <>
-              <Link href="/login" className="btn-nav">Log in</Link>
-              <Link href="/signup" className="btn-primary text-sm py-2 px-5">Join TMAO</Link>
+              <Link href="/login" className="btn-nav opacity-80">Log in</Link>
+              <Link href="/signup" className="btn-primary py-3 px-4 text-xs tracking-[0.24em]">Join TMAO</Link>
             </>
           )}
         </div>

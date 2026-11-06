@@ -1,4 +1,5 @@
 import './globals.css';
+import Image from 'next/image';
 import Nav from '@/components/Nav';
 
 export const metadata = {
@@ -12,22 +13,34 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="bg-cozy min-h-screen flex flex-col">
         <Nav />
-        <main className="flex-1 mx-auto w-full max-w-5xl px-6 py-10">
+        <main className="site-main flex-1 mx-auto w-full max-w-5xl px-6 py-10">
           {children}
         </main>
-        <footer className="border-t-2 border-clay-500 py-6 px-8">
-          <div className="mx-auto max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-4">
-            <span className="text-xs font-semibold uppercase tracking-widest text-ink-400">
-              © 2026 The Good Company
-            </span>
-            <div className="flex items-center gap-5">
-              <a href="/about" className="text-xs text-ink-400 hover:text-clay-500 transition tracking-wider">About</a>
-              <a href="/listen" className="text-xs text-ink-400 hover:text-clay-500 transition tracking-wider">Listen</a>
-              <a href="/privacy" className="text-xs text-ink-400 hover:text-clay-500 transition tracking-wider">Privacy</a>
-              <a href="https://www.youtube.com/playlist?list=PLURaeuNWMwdy894eBMVPwR67ZDQpSWwsg" target="_blank" rel="noopener noreferrer" className="text-xs text-ink-400 hover:text-clay-500 transition tracking-wider">YouTube</a>
-              <a href="https://open.spotify.com/show/6aU9hxLKdMIEzBfQ2IhYt6" target="_blank" rel="noopener noreferrer" className="text-xs text-ink-400 hover:text-clay-500 transition tracking-wider">Spotify</a>
-              <a href="https://thegoodcompany.co.ke" target="_blank" rel="noopener noreferrer" className="text-xs text-ink-400 hover:text-clay-500 transition tracking-wider">thegoodcompany.co.ke</a>
-            </div>
+        <footer className="border-t border-[#26262A] pt-8 pb-10">
+          <div className="wrap flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+            <a href="/" aria-label="The Mics Are Open — home">
+              <Image src="/logo-tmao.png" alt="The Mics Are Open" width={340} height={80} className="h-10 w-auto" />
+            </a>
+            <nav aria-label="Footer" className="flex flex-wrap gap-x-5 gap-y-3.5">
+              {[
+                ['/about', 'About'],
+                ['/listen', 'Listen'],
+                ['/privacy', 'Privacy'],
+                ['https://www.youtube.com/playlist?list=PLURaeuNWMwdy894eBMVPwR67ZDQpSWwsg', 'YouTube'],
+                ['https://open.spotify.com/show/6aU9hxLKdMIEzBfQ2IhYt6', 'Spotify'],
+                ['https://thegoodcompany.co.ke', 'thegoodcompany.co.ke'],
+              ].map(([href, label]) => (
+                <a
+                  key={href}
+                  href={href}
+                  {...(href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-600 hover:text-white transition"
+                >
+                  {label}
+                </a>
+              ))}
+            </nav>
+            <span className="text-xs tracking-[0.06em] text-ink-400">© 2026 The Good Company</span>
           </div>
         </footer>
       </body>
