@@ -104,7 +104,7 @@ export default function AboutPage() {
         <div className="grid md:grid-cols-2 gap-1.5">
           {[
             { src: '/collage/c6.jpg', alt: 'The hosts mid-conversation in the studio' },
-            { src: '/collage/c4.jpg', alt: 'The Mics Are Open studio session' },
+            { src: '/collage/kodong.jpg', alt: 'The Mics Are Open with Kodong Klan in the studio' },
           ].map((img) => (
             <figure key={img.src} className="photo aspect-video">
               <Image src={img.src} alt={img.alt} fill sizes="(min-width:768px) 50vw, 100vw" className="object-cover" style={{ objectPosition: '50% 35%' }} />
