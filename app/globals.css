@@ -153,7 +153,11 @@ h1, h2, h3 {
 }
 .split-hero .photo { aspect-ratio: 16 / 9; }
 .split-hero .photo.portrait { aspect-ratio: 4 / 5; }
-.split-hero .panel { padding: 22px 20px 40px; }
+.split-hero .panel { padding: 22px 20px 40px; min-width: 0; container-type: inline-size; }
+/* Headlines inside split panels are sized from the panel width (see lib/fit.js),
+   so the longest word always fits and text can never run into the photo. */
+.split-hero .panel .fit { font-size: min(var(--max, 84px), var(--fit, 10cqi)); }
+.display { overflow-wrap: break-word; }
 @media (min-width: 1000px) {
   /* Desktop: text + photo sit inside the same centred 1240px column (48px gutters)
      as the rest of the page, so the photo never runs into the page edge. */

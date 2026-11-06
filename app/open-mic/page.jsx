@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { fitStyle } from '@/lib/fit';
 import { createClient } from '@/lib/supabase/server';
 import PostComposer from './PostComposer';
 import PostCard from './PostCard';
@@ -76,7 +77,7 @@ export default async function WallPage() {
         </div>
         <div className="panel">
           <Chip tone="y" value="Andy" label="Hosted by" />
-          <h1 className="display mt-4 text-[clamp(56px,15vw,150px)] lg:text-[clamp(44px,5.4vw,84px)]">
+          <h1 className="display fit mt-4" style={fitStyle('Open Mic', 96)}>
             Open <span className="hl">Mic</span>
           </h1>
           <p className="mt-4 max-w-[560px] font-semibold text-ink-700 text-[clamp(15px,3.8vw,18px)]">

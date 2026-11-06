@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { fitStyle } from '@/lib/fit';
 import Chip from '@/components/Chip';
 import CommunityCta from '@/components/CommunityCta';
 
@@ -67,7 +68,7 @@ export default function ListenPage() {
         </div>
         <div className="panel">
           <Chip value="Fri" label="Every Friday" />
-          <h1 className="display mt-4 text-[clamp(56px,15vw,150px)] lg:text-[clamp(44px,5.4vw,96px)]">
+          <h1 className="display fit mt-4" style={fitStyle('Listen.', 96)}>
             Listen<span className="hl">.</span>
           </h1>
           <p className="mt-4 max-w-[560px] font-semibold text-ink-700 text-[clamp(15px,3.8vw,18px)]">

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { fitStyle } from '@/lib/fit';
 import Image from 'next/image';
 import Chip from './Chip';
 
@@ -11,7 +12,7 @@ export default function CommunityCta() {
       </div>
       <div className="panel">
         <Chip value="New" label="Every Friday" />
-        <h2 className="display mt-4 mb-7 text-[clamp(36px,9vw,72px)] lg:text-[clamp(36px,4.6vw,72px)]">
+        <h2 className="display fit mt-4 mb-7" style={fitStyle('Already a listener? Come talk about it.', 72)}>
           Already a listener? <span className="hl">Come talk about it.</span>
         </h2>
         <div className="flex flex-wrap gap-2.5">

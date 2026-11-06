@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { fitStyle } from '@/lib/fit';
 import Image from 'next/image';
 import Chip from '@/components/Chip';
 
@@ -31,7 +32,7 @@ export default function AboutPage() {
         </div>
         <div className="panel">
           <Chip value="#1" label="Kenya’s Podcast" />
-          <h1 className="display mt-[18px] text-[clamp(40px,10.5vw,104px)] lg:text-[clamp(40px,5vw,80px)]">
+          <h1 className="display fit mt-[18px]" style={fitStyle('The Mics Are Open just happens.', 80)}>
             <small className="block text-[0.4em] font-extrabold tracking-normal mb-[0.35em] text-[#EDEDF0]">Some podcasts are produced.</small>
             The Mics Are Open just <span className="hl">happens.</span>
           </h1>
@@ -161,7 +162,7 @@ export default function AboutPage() {
         </div>
         <div className="panel">
           <Chip value="New" label="Every Friday" />
-          <h2 className="display mt-[18px] mb-7 text-[clamp(38px,9.5vw,96px)] lg:text-[clamp(38px,4.6vw,72px)]">
+          <h2 className="display fit mt-[18px] mb-7" style={fitStyle('Ready to join the conversation?', 72)}>
             Ready to join the <span className="hl">conversation?</span>
           </h2>
           <div className="flex flex-wrap gap-2.5">
