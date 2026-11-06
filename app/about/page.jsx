@@ -98,19 +98,20 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Photo strip — photos in their own frames, chip below */}
-      <section className="bleed grid md:grid-cols-[1.4fr_1fr] gap-1.5">
-        <figure className="bg-[#0A0A0B]">
-          <div className="photo aspect-video">
-            <Image src="/collage/c6.jpg" alt="The hosts mid-conversation in the studio" fill sizes="(min-width:768px) 58vw, 100vw" className="object-cover" />
-          </div>
-          <figcaption className="p-3"><Chip small value="Fri" label="Every Friday" /></figcaption>
-        </figure>
-        <figure className="bg-[#0A0A0B]">
-          <div className="photo aspect-video">
-            <Image src="/collage/c4.jpg" alt="The Mics Are Open studio session" fill sizes="(min-width:768px) 42vw, 100vw" className="object-cover" />
-          </div>
-        </figure>
+      {/* Photo strip — two photos at the same size (equal columns, 16:9, cover),
+          in their own frames with nothing on top; the chip sits on a solid bar below */}
+      <section className="bleed">
+        <div className="grid md:grid-cols-2 gap-1.5">
+          {[
+            { src: '/collage/c6.jpg', alt: 'The hosts mid-conversation in the studio' },
+            { src: '/collage/c4.jpg', alt: 'The Mics Are Open studio session' },
+          ].map((img) => (
+            <figure key={img.src} className="photo aspect-video">
+              <Image src={img.src} alt={img.alt} fill sizes="(min-width:768px) 50vw, 100vw" className="object-cover" style={{ objectPosition: '50% 35%' }} />
+            </figure>
+          ))}
+        </div>
+        <div className="bg-[#0A0A0B] p-3"><Chip small value="Fri" label="Every Friday" /></div>
       </section>
 
       {/* Following + stats */}
