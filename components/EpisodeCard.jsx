@@ -14,7 +14,7 @@ export default function EpisodeCard({ thread, index = 0, feature = false, replyC
 
   return (
     <Link href={`/threads/${thread.id}`} className={`ep-card ${feature ? 'feature' : ''}`}>
-      <div className="thumb">
+      <div className="thumb edge-mask">
         {thumb ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={thumb} alt={`Episode ${thread.episode_num || ''} thumbnail`} loading="lazy" />

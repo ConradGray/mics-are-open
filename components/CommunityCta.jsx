@@ -7,7 +7,7 @@ import Chip from './Chip';
 export default function CommunityCta() {
   return (
     <section className="bleed split-hero bg-[#141416]" style={{ background: '#141416' }}>
-      <div className="photo">
+      <div className="photo edge-mask">
         <Image src="/collage/c6.jpg" alt="The hosts mid-conversation in the studio" fill sizes="(min-width:1000px) 60vw, 100vw" className="object-cover" />
       </div>
       <div className="panel">

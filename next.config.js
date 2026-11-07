@@ -7,6 +7,12 @@ const nextConfig = {
         hostname: '*.supabase.co',
         pathname: '/storage/v1/object/public/**',
       },
+      {
+        // Episode thumbnails for the homepage hero
+        protocol: 'https',
+        hostname: 'i.ytimg.com',
+        pathname: '/vi/**',
+      },
     ],
   },
   async redirects() {

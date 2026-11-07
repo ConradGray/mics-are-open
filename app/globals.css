@@ -145,6 +145,23 @@ h1, h2, h3 {
   pointer-events: none;
 }
 
+/* Edge mask — a slight vignette so photos melt into the black page.
+   Only the outer ~6% of each side darkens (percent-based, so it scales with
+   the image); the centre, and every face, is untouched. Drawn on ::before so
+   it stacks with .fade-bottom (::after) and stays still during hover zooms.
+   Use on photos and episode thumbnails, not on logos, avatars or players. */
+.edge-mask { position: relative; isolation: isolate; }
+.edge-mask::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(to right, rgb(10 10 11 / .55), rgb(10 10 11 / 0) 6%, rgb(10 10 11 / 0) 94%, rgb(10 10 11 / .55)),
+    linear-gradient(to bottom, rgb(10 10 11 / .55), rgb(10 10 11 / 0) 6%, rgb(10 10 11 / 0) 94%, rgb(10 10 11 / .55));
+}
+
 /* Split hero: solid text panel + clean photo.
    Mobile: photo on top, text below. Desktop: text left, photo right. */
 .split-hero {

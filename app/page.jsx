@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server';
 import Chip from '@/components/Chip';
 import EpisodeCard from '@/components/EpisodeCard';
 import CommunityCta from '@/components/CommunityCta';
-import { splitHighlight } from '@/lib/episodes';
+import { splitHighlight, bestYoutubeThumb } from '@/lib/episodes';
 
 export default async function HomePage() {
   const supabase = createClient();
@@ -54,6 +54,13 @@ export default async function HomePage() {
     ? new Date(latest.published_at).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
     : null;
 
+  // Hero image: the latest episode's own YouTube thumbnail, so the top of the
+  // page refreshes itself each Friday. Falls back to the studio shot.
+  const latestThumb = latest ? await bestYoutubeThumb(latest.embed_url) : null;
+  const hero = latestThumb
+    ? { src: latestThumb, alt: `Episode ${latest.episode_num || ''} thumbnail: ${latest.title}`.trim(), position: '50% 50%' }
+    : { src: '/collage/c1.jpg', alt: 'The Mics Are Open hosts in the studio', position: '50% 40%' };
+
   return (
     <div className="page-full flex flex-col">
 
@@ -61,8 +68,9 @@ export default async function HomePage() {
           Faces rule: the photo sits in its own frame with no overlay;
           all text lives on the solid black panel. */}
       <section className="bleed split-hero">
-        <div className="photo fade-bottom">
-          <Image src="/collage/c1.jpg" alt="The Mics Are Open hosts in the studio" fill priority sizes="(min-width:1000px) 60vw, 100vw" className="object-cover" style={{ objectPosition: '50% 40%' }} />
+        {/* No fade on the episode thumbnail: it's shown exactly as published. */}
+        <div className={`photo edge-mask ${latestThumb ? '' : 'fade-bottom'}`}>
+          <Image src={hero.src} alt={hero.alt} fill priority sizes="(min-width:1000px) 60vw, 100vw" className="object-cover" style={{ objectPosition: hero.position }} />
         </div>
         <div className="panel">
           <span className="tmao-label inline-block bg-[#FFD21F] text-[#0A0A0B] px-2.5 py-1.5 mb-3.5">This week</span>
@@ -246,7 +254,7 @@ export default async function HomePage() {
         <div className="wrap">
           <div className="grid md:grid-cols-2 gap-1.5">
             {['/collage/c3.jpg', '/collage/c5.jpg'].map((src) => (
-              <figure key={src} className="photo aspect-video">
+              <figure key={src} className="photo edge-mask aspect-video">
                 <Image src={src} alt="Studio session" fill sizes="(min-width:1240px) 600px, (min-width:768px) 50vw, 100vw" className="object-cover" style={{ objectPosition: '50% 35%' }} />
               </figure>
             ))}
