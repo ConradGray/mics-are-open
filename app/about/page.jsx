@@ -27,7 +27,7 @@ export default function AboutPage() {
     <div className="page-full">
       {/* Hero — group photo in its own frame, text on a solid panel */}
       <section className="bleed split-hero">
-        <div className="photo fade-bottom">
+        <div className="photo edge-mask fade-bottom">
           <Image src="/collage/c2.jpg" alt="G Money, Calvin, Ashley and Andy Young in the studio" fill priority sizes="(min-width:1000px) 60vw, 100vw" className="object-cover" style={{ objectPosition: '50% 35%' }} />
         </div>
         <div className="panel">
@@ -51,7 +51,7 @@ export default function AboutPage() {
             {hosts.map((host) => (
               <a key={host.name} href={host.ig} target="_blank" rel="noopener noreferrer"
                  className="group flex flex-col border border-[#26262A] hover:border-clay-500 transition">
-                <div className="photo aspect-[4/5]">
+                <div className="photo edge-mask aspect-[4/5]">
                   <Image src={host.photo} alt={host.name} fill sizes="(min-width:768px) 25vw, 50vw" className="object-cover transition-transform duration-500 group-hover:scale-[1.04]" style={{ objectPosition: '50% 25%' }} />
                 </div>
                 <div className="bg-[#141416] p-3 md:p-4">
@@ -108,7 +108,7 @@ export default function AboutPage() {
             { src: '/collage/c6.jpg', alt: 'The hosts mid-conversation in the studio' },
             { src: '/collage/kodong.jpg', alt: 'The Mics Are Open with Kodong Klan in the studio' },
           ].map((img) => (
-            <figure key={img.src} className="photo aspect-video">
+            <figure key={img.src} className="photo edge-mask aspect-video">
               <Image src={img.src} alt={img.alt} fill sizes="(min-width:1240px) 600px, (min-width:768px) 50vw, 100vw" className="object-cover" style={{ objectPosition: '50% 35%' }} />
             </figure>
           ))}
@@ -157,7 +157,7 @@ export default function AboutPage() {
 
       {/* CTA — solid panel, photo in its own frame */}
       <section className="bleed split-hero" style={{ background: '#141416' }}>
-        <div className="photo">
+        <div className="photo edge-mask">
           <Image src="/collage/c6.jpg" alt="" fill sizes="(min-width:1000px) 60vw, 100vw" className="object-cover" />
         </div>
         <div className="panel">

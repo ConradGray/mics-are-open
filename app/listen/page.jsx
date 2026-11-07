@@ -63,7 +63,7 @@ export default function ListenPage() {
     <div className="page-full">
       {/* Hero — studio photo in its own frame, text on a solid panel */}
       <section className="bleed split-hero">
-        <div className="photo fade-bottom">
+        <div className="photo edge-mask fade-bottom">
           <Image src="/collage/ep1.jpg" alt="The Mics Are Open studio" fill priority sizes="(min-width:1000px) 60vw, 100vw" className="object-cover" />
         </div>
         <div className="panel">
@@ -102,7 +102,7 @@ export default function ListenPage() {
           <p className="section-label">From the studio</p>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5">
           {studio.map((name, i) => (
-            <div key={name} className={`photo ${i === 0 ? 'col-span-2 aspect-video md:row-span-2 md:aspect-auto' : 'aspect-square'}`}>
+            <div key={name} className={`photo edge-mask ${i === 0 ? 'col-span-2 aspect-video md:row-span-2 md:aspect-auto' : 'aspect-square'}`}>
               <Image src={`/collage/${name}.jpg`} alt="" fill sizes="(min-width:768px) 33vw, 50vw" className="object-cover" />
             </div>
           ))}

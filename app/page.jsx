@@ -69,7 +69,7 @@ export default async function HomePage() {
           all text lives on the solid black panel. */}
       <section className="bleed split-hero">
         {/* No fade on the episode thumbnail: it's shown exactly as published. */}
-        <div className={`photo ${latestThumb ? '' : 'fade-bottom'}`}>
+        <div className={`photo edge-mask ${latestThumb ? '' : 'fade-bottom'}`}>
           <Image src={hero.src} alt={hero.alt} fill priority sizes="(min-width:1000px) 60vw, 100vw" className="object-cover" style={{ objectPosition: hero.position }} />
         </div>
         <div className="panel">
@@ -254,7 +254,7 @@ export default async function HomePage() {
         <div className="wrap">
           <div className="grid md:grid-cols-2 gap-1.5">
             {['/collage/c3.jpg', '/collage/c5.jpg'].map((src) => (
-              <figure key={src} className="photo aspect-video">
+              <figure key={src} className="photo edge-mask aspect-video">
                 <Image src={src} alt="Studio session" fill sizes="(min-width:1240px) 600px, (min-width:768px) 50vw, 100vw" className="object-cover" style={{ objectPosition: '50% 35%' }} />
               </figure>
             ))}

@@ -72,7 +72,7 @@ export default async function WallPage() {
     <div className="page-full">
       {/* Hero — Andy's photo in its own frame (no overlay), text on a solid panel */}
       <section className="bleed split-hero">
-        <div className="photo portrait fade-bottom">
+        <div className="photo edge-mask portrait fade-bottom">
           <Image src="/hosts/andy3.jpg" alt="Andy Young" fill priority sizes="(min-width:1000px) 60vw, 100vw" className="object-cover" style={{ objectPosition: '50% 20%' }} />
         </div>
         <div className="panel">
