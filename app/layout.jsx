@@ -28,7 +28,7 @@ export default function RootLayout({ children }) {
                 ['/privacy', 'Privacy'],
                 ['https://www.youtube.com/playlist?list=PLURaeuNWMwdy894eBMVPwR67ZDQpSWwsg', 'YouTube'],
                 ['https://open.spotify.com/show/6aU9hxLKdMIEzBfQ2IhYt6', 'Spotify'],
-                ['https://thegoodcompany.co.ke', 'thegoodcompany.co.ke'],
+                // Desyn Lab (desynlab.co.ke) is linked once, via the "Built by" credit below.
               ].map(([href, label]) => (
                 <a
                   key={href}
