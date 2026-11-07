@@ -44,7 +44,7 @@ export default function RootLayout({ children }) {
           {/* Bottom row: copyright left, "Built by" credit right (stacks on mobile) */}
           <div className="wrap mt-6">
            <div className="pt-5 border-t border-[#26262A] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <span className="text-xs tracking-[0.06em] text-ink-400">© 2026 The Good Company</span>
+            <span className="text-xs tracking-[0.06em] text-ink-400">© {new Date().getFullYear()} The Mics Are Open</span>
             <a
               href="https://desynlab.co.ke"
               target="_blank"
