@@ -1,5 +1,6 @@
 import './globals.css';
 import Image from 'next/image';
+import Script from 'next/script';
 import Nav from '@/components/Nav';
 
 export const metadata = {
@@ -57,6 +58,11 @@ export default function RootLayout({ children }) {
            </div>
           </div>
         </footer>
+        {/* Vercel Web Analytics (cookie-free visitor counts). Loaded without the npm package. */}
+        <Script id="vercel-va-init" strategy="afterInteractive">
+          {`window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };`}
+        </Script>
+        <Script src="/_vercel/insights/script.js" strategy="afterInteractive" />
       </body>
     </html>
   );
